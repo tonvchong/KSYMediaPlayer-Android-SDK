@@ -141,7 +141,7 @@ public class VideoPlayerActivity extends Activity implements
 
 		Log.i(Constants.LOG_TAG, "activity on finish ===========");
 		// this.onBackPressed();
-		this.finish();
+//		this.finish();
 	}
 
 	@Override
@@ -149,18 +149,6 @@ public class VideoPlayerActivity extends Activity implements
 
 		// TODO Auto-generated method stub
 
-	}
-
-	/**
-	 * 返回键退出
-	 */
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			finish();
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
 	}
 
 }

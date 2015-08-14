@@ -86,7 +86,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		@Override
 		public void loadLibrary(String libName) throws UnsatisfiedLinkError,
 				SecurityException {
-
 			System.loadLibrary(libName);
 		}
 	};
@@ -1134,7 +1133,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 	private native void _setTimeout(int timeout);
 
-	private native void _setCachedDir(String cachedPath);//宝宝巴士缓存目录
+	private native void _setCachedDir(String cachedPath);
 
 	private native void _setLowDelayEnabled(boolean enabled);
 
