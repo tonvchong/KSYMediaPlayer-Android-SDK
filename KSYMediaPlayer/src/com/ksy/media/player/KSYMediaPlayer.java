@@ -33,10 +33,6 @@ import com.ksy.media.player.pragma.DebugLog;
 import com.ksy.media.player.util.Constants;
 import com.ksy.media.player.util.IOUtils;
 
-/**
- * 
- * Java wrapper of ffplay.
- */
 public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 	private final static String TAG = KSYMediaPlayer.class.getName();
@@ -77,10 +73,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	private String mDataSource;
 	private String mFFConcatContent;
 
-	/**
-	 * Default library loader Load them by yourself, if your libraries are not
-	 * installed at default place.
-	 */
 	private static KSYLibLoader sLocalLibLoader = new KSYLibLoader() {
 
 		@Override
@@ -118,25 +110,11 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		}
 	}
 
-	/**
-	 * Default constructor. Consider using one of the create() methods for
-	 * synchronously instantiating a IjkMediaPlayer from a Uri or resource.
-	 * <p>
-	 * When done with the IjkMediaPlayer, you should call {@link #release()}, to
-	 * free the resources. If not released, too many IjkMediaPlayer instances
-	 * may result in an exception.
-	 * </p>
-	 */
 	public KSYMediaPlayer() {
 
 		this(sLocalLibLoader);
 	}
 
-	/**
-	 * do not loadLibaray
-	 * 
-	 * @param reserved
-	 */
 	public KSYMediaPlayer(KSYLibLoader libLoader) {
 
 		initPlayer(libLoader);
@@ -156,32 +134,11 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			mEventHandler = null;
 		}
 
-		/*
-		 * Native setup requires a weak reference to our object. It's easier to
-		 * create it here than in C++.
-		 */
 		native_setup(new WeakReference<KSYMediaPlayer>(this));
 	}
 
-	/*
-	 * Update the IjkMediaPlayer SurfaceTexture. Call after setting a new
-	 * display surface.
-	 */
 	private native void _setVideoSurface(Surface surface);
 
-	/**
-	 * Sets the {@link SurfaceHolder} to use for displaying the video portion of
-	 * the media.
-	 * 
-	 * Either a surface holder or surface must be set if a display or video sink
-	 * is needed. Not calling this method or {@link #setSurface(Surface)} when
-	 * playing back a video will result in only the audio track being played. A
-	 * null surface holder or surface will result in only the audio track being
-	 * played.
-	 * 
-	 * @param sh
-	 *            the SurfaceHolder to use for video display
-	 */
 	@Override
 	public void setDisplay(SurfaceHolder sh) {
 
@@ -196,25 +153,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		updateSurfaceScreenOn();
 	}
 
-	/**
-	 * Sets the {@link Surface} to be used as the sink for the video portion of
-	 * the media. This is similar to {@link #setDisplay(SurfaceHolder)}, but
-	 * does not support {@link #setScreenOnWhilePlaying(boolean)}. Setting a
-	 * Surface will un-set any Surface or SurfaceHolder that was previously set.
-	 * A null surface will result in only the audio track being played.
-	 * 
-	 * If the Surface sends frames to a {@link SurfaceTexture}, the timestamps
-	 * returned from {@link SurfaceTexture#getTimestamp()} will have an
-	 * unspecified zero point. These timestamps cannot be directly compared
-	 * between different media sources, different instances of the same media
-	 * source, or multiple runs of the same program. The timestamp is normally
-	 * monotonically increasing and is unaffected by time-of-day adjustments,
-	 * but it is reset when the position is set.
-	 * 
-	 * @param surface
-	 *            The {@link Surface} to be used for the video portion of the
-	 *            media.
-	 */
 	@Override
 	public void setSurface(Surface surface) {
 
@@ -227,26 +165,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		updateSurfaceScreenOn();
 	}
 
-	/**
-	 * Sets the data source (file-path or http/rtsp URL) to use.
-	 * 
-	 * @param path
-	 *            the path of the file, or the http/rtsp URL of the stream you
-	 *            want to play
-	 * @throws IllegalStateException
-	 *             if it is called in an invalid state
-	 * 
-	 *             <p>
-	 *             When <code>path</code> refers to a local file, the file may
-	 *             actually be opened by a process other than the calling
-	 *             application. This implies that the pathname should be an
-	 *             absolute path (as any other process runs with unspecified
-	 *             current working directory), and that the pathname should
-	 *             reference a world-readable file. As an alternative, the
-	 *             application could first open the file for reading, and then
-	 *             use the file descriptor form
-	 *             {@link #setDataSource(FileDescriptor)}.
-	 */
 	@Override
 	public void setDataSource(String path) throws IOException,
 			IllegalArgumentException, SecurityException, IllegalStateException {
@@ -403,22 +321,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	@Override
 	public native long getDuration();
 
-	/**
-	 * Releases resources associated with this IjkMediaPlayer object. It is
-	 * considered good practice to call this method when you're done using the
-	 * IjkMediaPlayer. In particular, whenever an Activity of an application is
-	 * paused (its onPause() method is called), or stopped (its onStop() method
-	 * is called), this method should be invoked to release the IjkMediaPlayer
-	 * object, unless the application has a special need to keep the object
-	 * around. In addition to unnecessary resources (such as memory and
-	 * instances of codecs) being held, failure to call this method immediately
-	 * if a IjkMediaPlayer object is no longer needed may also lead to
-	 * continuous battery consumption for mobile devices, and playback failure
-	 * for other applications if no multiple instances of the same codec are
-	 * supported on a device. Even if multiple instances of the same codec are
-	 * supported, some performance degradation may be expected when unnecessary
-	 * multiple instances are used at the same time.
-	 */
+
 	@Override
 	public void release() {
 
@@ -700,13 +603,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		}
 	}
 
-	/*
-	 * Called from native code when an interesting event happens. This method
-	 * just uses the EventHandler system to post the event back to the main app
-	 * thread. We use a weak reference to the original IjkMediaPlayer object so
-	 * that the native code is safe from the object disappearing from underneath
-	 * it. (This is the cookie passed to native_setup().)
-	 */
 	@CalledByNative
 	private static void postEventFromNative(Object weakThiz, int what,
 			int arg1, int arg2, Object obj) {
