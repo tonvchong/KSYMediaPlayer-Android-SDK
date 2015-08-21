@@ -888,6 +888,9 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 					+ ",replace the default size :" + MEDIA_BUFFERSIZE_DEFAULT);
 		}
 		_setBufferSize(size);
+		
+		//TODO 缓存大小
+		
 	};
 
 	@Override

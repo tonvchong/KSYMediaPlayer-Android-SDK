@@ -3,21 +3,16 @@ package com.ksy.media.demo;
 import java.io.File;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import com.ksy.media.player.log.LogClient;
 import com.ksy.media.player.util.Constants;
 import com.ksy.media.widget.MediaPlayerView;
 
@@ -25,6 +20,8 @@ public class VideoPlayerActivity extends Activity implements
 		MediaPlayerView.PlayerViewCallback {
 
 	MediaPlayerView playerView;
+	
+	LogClient logClient = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +38,10 @@ public class VideoPlayerActivity extends Activity implements
 		final EditText editInput = (EditText) dialogView
 				.findViewById(R.id.input);
 		startPlayer("");
+		
+		
+		logClient = LogClient.getInstance(this);
+		
 		/*new AlertDialog.Builder(this).setTitle("User Input")
 				.setView(dialogView)
 				.setPositiveButton("Confirm", new OnClickListener() {

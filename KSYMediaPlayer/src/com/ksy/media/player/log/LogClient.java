@@ -1,13 +1,33 @@
 package com.ksy.media.player.log;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
+
 import org.apache.http.Header;
+import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ByteArrayEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import android.text.format.Formatter;
+import android.util.Log;
+
 import com.ksy.media.player.db.DBManager;
 import com.ksy.media.player.db.RecordResult;
 import com.ksy.media.player.exception.Ks3ClientException;
@@ -16,11 +36,6 @@ import com.ksy.media.player.util.GzipUtil;
 import com.ksy.media.player.util.NetworkUtil;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
-
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.text.TextUtils;
-import android.util.Log;
 
 public class LogClient {
 	private static final int LOG_ONCE_LIMIT = 120;
@@ -33,9 +48,18 @@ public class LogClient {
 	private Timer timer;
 	private boolean isNeedloop;
 	private int sendCount;
-
+	
+	private LogGetData logGetData;
+	
+	
 	private LogClient() {
+		logGetData = LogGetData.getInstance();
 	};
+
+	private LogClient(Context context) {
+		logGetData = LogGetData.getInstance(context);
+		
+	}
 
 	public static LogClient getInstance() {
 		if (null == mInstance) {
@@ -54,7 +78,7 @@ public class LogClient {
 			synchronized (mLockObject) {
 				if (null == mInstance) {
 					mContext = context;
-					mInstance = new LogClient();
+					mInstance = new LogClient(context);
 					syncClient = new SyncHttpClient();
 				}
 			}
@@ -74,6 +98,8 @@ public class LogClient {
 			Log.d(Constants.LOG_TAG, "gzip is failed, send log ingored");
 			return;
 		}
+
+		// TODO
 		syncClient.addHeader("accept-encoding", "gzip, deflate");
 		syncClient.post(mContext, Constants.LOG_SERVER_URL, byteArrayEntity,
 				"text/plain", new AsyncHttpResponseHandler() {
@@ -233,4 +259,6 @@ public class LogClient {
 	 * File(Environment.getExternalStorageDirectory(), filename); OutputStream
 	 * out = new FileOutputStream(file); out.write(content); out.close(); }
 	 */
+
+
 }
