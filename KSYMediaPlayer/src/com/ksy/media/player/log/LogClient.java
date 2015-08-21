@@ -1,40 +1,27 @@
 package com.ksy.media.player.log;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
-
-import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.text.format.Formatter;
 import android.util.Log;
-
 import com.ksy.media.player.db.DBManager;
 import com.ksy.media.player.db.RecordResult;
 import com.ksy.media.player.exception.Ks3ClientException;
 import com.ksy.media.player.util.Constants;
 import com.ksy.media.player.util.GzipUtil;
 import com.ksy.media.player.util.NetworkUtil;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 
 public class LogClient {
@@ -42,23 +29,21 @@ public class LogClient {
 	private static final long TIMER_INTERVAL = 60 * 60 * 1000;
 	private static LogClient mInstance;
 	private static Object mLockObject = new Object();
-	private static SyncHttpClient syncClient;
+//	private static SyncHttpClient syncClient;
 	private static Context mContext;
 	private volatile boolean mStarted = false;
 	private Timer timer;
 	private boolean isNeedloop;
 	private int sendCount;
-	
-	private LogGetData logGetData;
-	
-	
+
+	public static LogGetData logGetData;
+
 	private LogClient() {
-		logGetData = LogGetData.getInstance();
+
 	};
 
 	private LogClient(Context context) {
-		logGetData = LogGetData.getInstance(context);
-		
+
 	}
 
 	public static LogClient getInstance() {
@@ -66,7 +51,8 @@ public class LogClient {
 			synchronized (mLockObject) {
 				if (null == mInstance) {
 					mInstance = new LogClient();
-					syncClient = new SyncHttpClient();
+//					syncClient = new SyncHttpClient();
+					logGetData = LogGetData.getInstance();
 				}
 			}
 		}
@@ -79,7 +65,8 @@ public class LogClient {
 				if (null == mInstance) {
 					mContext = context;
 					mInstance = new LogClient(context);
-					syncClient = new SyncHttpClient();
+//					syncClient = new SyncHttpClient();
+					logGetData = LogGetData.getInstance();
 				}
 			}
 		}
@@ -99,8 +86,55 @@ public class LogClient {
 			return;
 		}
 
+		//第一步
+		HttpClient httpClient = new DefaultHttpClient();
+		//第二步：生成使用POST方法的请求对象
+		HttpPost httpPost = new HttpPost(Constants.LOG_SERVER_URL);
+//		httpPost.setHeader("Content-Type", "text/plain");
+		httpPost.addHeader("accept-encoding", "gzip, deflate");
+		
+		try {
+			//将请求体放置在请求对象当中
+			httpPost.setEntity(byteArrayEntity);
+			// 执行请求对象
+			try {
+				//第三步：执行请求对象，获取服务器发还的相应对象
+				HttpResponse response = httpClient.execute(httpPost);
+				//第四步：检查相应的状态是否正常：检查状态码的值是200表示正常
+				if (response.getStatusLine().getStatusCode() == 200) {
+					
+					DBManager.getInstance(mContext).deleteLogs(
+							recordsResult.idBuffer.toString());
+					Log.d(Constants.LOG_TAG, "log send count:" + sendCount
+							+ ",next count : " + (allCount - sendCount));
+					
+					recordsResult.release();
+					if (isNeedloop) {
+						if (allCount - sendCount > 0) {
+							sendRecord(allCount - sendCount);
+						} else {
+							Log.d(Constants.LOG_TAG, "more than 120 mode, last send all over");
+						}
+					} else {
+						Log.d(Constants.LOG_TAG, "less than 120 mode, send all over");
+					}
+					
+				} else {
+                   //TODO failure
+				   Log.e(Constants.LOG_TAG, "response.getStatusLine().getStatusCode()=" + response.getStatusLine().getStatusCode()); 
+				   
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				Log.e(Constants.LOG_TAG, "HttpResponse error =" + e);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.e(Constants.LOG_TAG, "httpPost error ===" + e);
+		}
+		
 		// TODO
-		syncClient.addHeader("accept-encoding", "gzip, deflate");
+		/*syncClient.addHeader("accept-encoding", "gzip, deflate");
 		syncClient.post(mContext, Constants.LOG_SERVER_URL, byteArrayEntity,
 				"text/plain", new AsyncHttpResponseHandler() {
 
@@ -138,7 +172,9 @@ public class LogClient {
 									+ new String(paramArrayOfByte));
 						}
 					}
-				});
+				});*/
+
+
 	}
 
 	private String makeJsonLog(String recordsJson) {
@@ -259,6 +295,5 @@ public class LogClient {
 	 * File(Environment.getExternalStorageDirectory(), filename); OutputStream
 	 * out = new FileOutputStream(file); out.write(content); out.close(); }
 	 */
-
 
 }

@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.ksy.media.player.log.LogClient;
+import com.ksy.media.player.log.LogGetData;
 import com.ksy.media.player.util.Constants;
 import com.ksy.media.widget.MediaPlayerView;
 
@@ -41,6 +42,8 @@ public class VideoPlayerActivity extends Activity implements
 		
 		
 		logClient = LogClient.getInstance(this);
+		String s = logClient.logGetData.getInstance(this).getCpuInfo();
+		Log.d("lixp", "s ==" + s);
 		
 		/*new AlertDialog.Builder(this).setTitle("User Input")
 				.setView(dialogView)
