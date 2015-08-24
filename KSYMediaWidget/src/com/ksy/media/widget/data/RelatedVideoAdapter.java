@@ -27,7 +27,6 @@ public class RelatedVideoAdapter extends BaseAdapter {
 			Context mContext) {
 		this.videoInfoList = videoInfoList;
 		// this.mContext = mContext;
-		Log.d("lixp", "mContext ==" + mContext);
 		inflater = LayoutInflater.from(mContext);
 	}
 

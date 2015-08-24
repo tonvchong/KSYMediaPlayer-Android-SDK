@@ -34,16 +34,18 @@ public class LogClient {
 	private volatile boolean mStarted = false;
 	private Timer timer;
 	private boolean isNeedloop;
-	private int sendCount;
+	private int sendCount; 
 
 	public static LogGetData logGetData;
-
+	private static LogRecord logRecord = new LogRecord();
+	
+	
 	private LogClient() {
 
 	};
 
 	private LogClient(Context context) {
-
+		
 	}
 
 	public static LogClient getInstance() {
@@ -59,20 +61,42 @@ public class LogClient {
 		return mInstance;
 	}
 
-	public static LogClient getInstance(Context context) {
+	public static LogClient getInstance(Context context, String pack) {
 		if (null == mInstance) {
 			synchronized (mLockObject) {
 				if (null == mInstance) {
 					mContext = context;
 					mInstance = new LogClient(context);
 //					syncClient = new SyncHttpClient();
-					logGetData = LogGetData.getInstance();
+					logGetData = LogGetData.getInstance(context);
+					addData(pack);
 				}
 			}
 		}
 		return mInstance;
 	}
 
+	//add data  TODO
+	protected static void addData(String pack) { 
+		logRecord.setUuid(logGetData.getUuid());
+		
+		logRecord.setCpu(logGetData.getCpuInfo());
+		logRecord.setCore(logGetData.getCoreVersion());
+		logRecord.setCpuUsage(logGetData.getCpuUsage(pack));
+		logRecord.setMemory(logGetData.getMemory());
+		logRecord.setMemoryUsage(logGetData.getMemoryUsage());
+		logRecord.setDate(logGetData.currentTimeGmt());
+		logRecord.setDevice(logGetData.getImei());
+		logRecord.setGmt(logGetData.getGmt());
+		logRecord.setNet(logGetData.getNetState());
+		logRecord.setDeviceIp(logGetData.getDeviceIp());
+		logRecord.setSystem("Android");
+		logRecord.setUserAgent("Android");
+//		logRecord.setServerIp(serverIp); //TODO
+		
+	}
+	
+	//TODO
 	private void sendRecordJson(final RecordResult recordsResult,
 			final int sendCount, final int allCount, final boolean isNeedloop) {
 		ByteArrayEntity byteArrayEntity = null;
@@ -120,7 +144,7 @@ public class LogClient {
 					}
 					
 				} else {
-                   //TODO failure
+                   //failure
 				   Log.e(Constants.LOG_TAG, "response.getStatusLine().getStatusCode()=" + response.getStatusLine().getStatusCode()); 
 				   
 				}
@@ -133,7 +157,7 @@ public class LogClient {
 			Log.e(Constants.LOG_TAG, "httpPost error ===" + e);
 		}
 		
-		// TODO
+		
 		/*syncClient.addHeader("accept-encoding", "gzip, deflate");
 		syncClient.post(mContext, Constants.LOG_SERVER_URL, byteArrayEntity,
 				"text/plain", new AsyncHttpResponseHandler() {

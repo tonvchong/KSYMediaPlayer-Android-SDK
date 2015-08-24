@@ -181,7 +181,7 @@ public class MediaPlayerLargeControllerView extends
 		//相关数据加载,没有数据，设置本地测试数据
 		relationList = new ArrayList<RelateVideoInfo>();
 		relatedAdapter = new RelatedVideoAdapter(relationList, mContext);
-//		Log.d("lixp", "170 mContext =" + relationList + ">>relationList=" + relationList);
+//		Log.d(Constants.LOG_TAG, "170 mContext =" + relationList + ">>relationList=" + relationList);
 		mRelateListview.setAdapter(relatedAdapter);
 //		mRelateListview.setCacheColorHint(Color.TRANSPARENT);
 	}

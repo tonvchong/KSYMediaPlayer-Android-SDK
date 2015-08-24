@@ -106,7 +106,7 @@ public class MediaPlayerControllerBrightView extends RelativeLayout {
 				.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 					@Override
 					public void onStopTrackingTouch(SeekBar seekBar) {
-						Log.d("lixp", "onStopTrackingTouch ....");
+						Log.d(Constants.LOG_TAG, "onStopTrackingTouch ....");
 
 					}
 
@@ -121,14 +121,14 @@ public class MediaPlayerControllerBrightView extends RelativeLayout {
 
 						// 取得当前进度
 						int tmpInt = seekBar.getProgress();
-						Log.d("lixp", "tmpInt =" + tmpInt + ">>mWindow=="
+						Log.d(Constants.LOG_TAG, "tmpInt =" + tmpInt + ">>mWindow=="
 								+ mWindow);
 						// 当进度小于40时，防止太黑看不见的后果
 						if (tmpInt < MIN_BRIGNTNESS) {
 							tmpInt = MIN_BRIGNTNESS;
 						}
 
-						Log.d("lixp",
+						Log.d(Constants.LOG_TAG,
 								"mContext =" + mContext
 										+ ">>mContext.getContentResolver()="
 										+ mContext.getContentResolver());

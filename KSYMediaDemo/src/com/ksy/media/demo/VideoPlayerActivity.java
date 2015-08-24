@@ -40,11 +40,6 @@ public class VideoPlayerActivity extends Activity implements
 				.findViewById(R.id.input);
 		startPlayer("");
 		
-		
-		logClient = LogClient.getInstance(this);
-		String s = logClient.logGetData.getInstance(this).getCpuInfo();
-		Log.d("lixp", "s ==" + s);
-		
 		/*new AlertDialog.Builder(this).setTitle("User Input")
 				.setView(dialogView)
 				.setPositiveButton("Confirm", new OnClickListener() {
@@ -88,7 +83,7 @@ public class VideoPlayerActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 
-		Log.d("lixp", "VideoPlayerActivity ....onDestroy()......");
+		Log.d(Constants.LOG_TAG, "VideoPlayerActivity ....onDestroy()......");
 		super.onDestroy();
 
 		playerView.onDestroy();

@@ -9,151 +9,235 @@ import org.json.JSONObject;
 import android.text.TextUtils;
 
 public class LogRecord {
-	private String source_ip;
-	private String target_ip;
-	private String model;
-	private String manufacturer;
-	private String id;
-	private String network_type;
-	private String build_version;
-	private String client_state;
-	private String error;
-	private String requestId;
-	private String connect_type;
-	private long send_before_time;
-	private long send_first_data_time;
-	private long send_complete_time;
+	
+	private String cpu;
+	private String memory;
+	private String core;
+	private String device;
+	private String uuid;
+	private String system;
+	private String net;
+	private String gmt;
+	private String date;
+	private String userAgent;
+	private String deviceIp;
+	private String serverIp; //TODO
+	private String cpuUsage;
+	private String memoryUsage;
+	private long firstFrameTime;
+	private int cacheBufferSize;
+	private long seekBegin;
+	private long seekEnd;
+	private String seekStatus;
+	private String seekMessage;
+	private String playStatus;
+	private String playMetaData; //TODO
+	
+	
+	public String getCpu() {
+		return cpu;
+	}
+
+	public void setCpu(String cpu) {
+		this.cpu = cpu;
+	}
+
+	public String getMemory() {
+		return memory;
+	}
+
+	public void setMemory(String memory) {
+		this.memory = memory;
+	}
+
+	public String getCore() {
+		return core;
+	}
+
+	public void setCore(String core) {
+		this.core = core;
+	}
+
+	public String getDevice() {
+		return device;
+	}
+
+	public void setDevice(String device) {
+		this.device = device;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public String getSystem() {
+		return system;
+	}
+
+	public void setSystem(String system) {
+		this.system = system;
+	}
+
+	public String getNet() {
+		return net;
+	}
+
+	public void setNet(String net) {
+		this.net = net;
+	}
+
+	public String getGmt() {
+		return gmt;
+	}
+
+	public void setGmt(String gmt) {
+		this.gmt = gmt;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
+
+	public String getDeviceIp() {
+		return deviceIp;
+	}
+
+	public void setDeviceIp(String deviceIp) {
+		this.deviceIp = deviceIp;
+	}
+
+	public String getServerIp() {
+		return serverIp;
+	}
+
+	public void setServerIp(String serverIp) {
+		this.serverIp = serverIp;
+	}
+
+	public String getCpuUsage() {
+		return cpuUsage;
+	}
+
+	public void setCpuUsage(String cpuUsage) {
+		this.cpuUsage = cpuUsage;
+	}
+
+	public String getMemoryUsage() {
+		return memoryUsage;
+	}
+
+	public void setMemoryUsage(String memoryUsage) {
+		this.memoryUsage = memoryUsage;
+	}
+
+	public long getFirstFrameTime() {
+		return firstFrameTime;
+	}
+
+	public void setFirstFrameTime(long firstFrameTime) {
+		this.firstFrameTime = firstFrameTime;
+	}
+
+	public int getCacheBufferSize() {
+		return cacheBufferSize;
+	}
+
+	public void setCacheBufferSize(int cacheBufferSize) {
+		this.cacheBufferSize = cacheBufferSize;
+	}
+
+	public long getSeekBegin() {
+		return seekBegin;
+	}
+
+	public void setSeekBegin(long seekBegin) {
+		this.seekBegin = seekBegin;
+	}
+
+	public long getSeekEnd() {
+		return seekEnd;
+	}
+
+	public void setSeekEnd(long seekEnd) {
+		this.seekEnd = seekEnd;
+	}
+
+	public String getSeekStatus() {
+		return seekStatus;
+	}
+
+	public void setSeekStatus(String seekStatus) {
+		this.seekStatus = seekStatus;
+	}
+
+	public String getSeekMessage() {
+		return seekMessage;
+	}
+
+	public void setSeekMessage(String seekMessage) {
+		this.seekMessage = seekMessage;
+	}
+
+	public String getPlayStatus() {
+		return playStatus;
+	}
+
+	public void setPlayStatus(String playStatus) {
+		this.playStatus = playStatus;
+	}
+
+	public String getPlayMetaData() {
+		return playMetaData;
+	}
+
+	public void setPlayMetaData(String playMetaData) {
+		this.playMetaData = playMetaData;
+	}
+
 
 	public void copyRecord(LogRecord record) {
-		setBuild_version(record.getBuild_version());
-		setClient_state(record.getClient_state());
-		setConnect_type(record.getConnect_type());
-		setError(record.getError());
-		setId(record.getId());
-		setManufacturer(record.getManufacturer());
-		setModel(record.getModel());
-		setNetwork_type(record.getNetwork_type());
-		setRequestId(record.getRequestId());
-		setSend_before_time(record.getSend_before_time());
-		setSend_complete_time(record.getSend_complete_time());
-		setSend_first_data_time(record.getSend_first_data_time());
-		setSource_ip(record.getSource_ip());
-		setTarget_ip(record.getTarget_ip());
+		setCpu(record.getCpu());
+		setMemory(record.getMemory());
+		setCore(record.getCore());
+		setDevice(record.getDevice());
+		setUuid(record.getUuid());
+		setSystem(record.getSystem());
+		setNet(record.getNet());
+		setGmt(record.getGmt());
+		setDate(record.getDate());
+		setUserAgent(record.getUserAgent());
+		setDeviceIp(record.getDeviceIp());
+		setServerIp(record.getServerIp());
+		setCpuUsage(record.getCpuUsage());
+		setMemoryUsage(record.getMemoryUsage());
+		setFirstFrameTime(record.getFirstFrameTime());
+		setCacheBufferSize(record.getCacheBufferSize());
+        setSeekBegin(record.getSeekBegin());
+        setSeekEnd(record.getSeekEnd());
+        setSeekStatus(record.getSeekStatus());
+        setSeekMessage(record.getSeekMessage());
+        setSeekStatus(record.getPlayStatus());
+        setPlayMetaData(record.getPlayMetaData());
 	}
 
-	public String getModel() {
-		return model;
-	}
-
-	public void setModel(String model) {
-		this.model = model;
-	}
-
-	public String getManufacturer() {
-		return manufacturer;
-	}
-
-	public void setManufacturer(String manufacturer) {
-		this.manufacturer = manufacturer;
-	}
-
-	public String getBuild_version() {
-		return build_version;
-	}
-
-	public void setBuild_version(String build_version) {
-		this.build_version = build_version;
-	}
-
-	public long getSend_before_time() {
-		return send_before_time;
-	}
-
-	public void setSend_before_time(long send_before_time) {
-		this.send_before_time = send_before_time;
-	}
-
-	public long getSend_first_data_time() {
-		return send_first_data_time;
-	}
-
-	public void setSend_first_data_time(long send_first_data_time) {
-		this.send_first_data_time = send_first_data_time;
-	}
-
-	public long getSend_complete_time() {
-		return send_complete_time;
-	}
-
-	public void setSend_complete_time(long send_complete_time) {
-		this.send_complete_time = send_complete_time;
-	}
-
-	public String getConnect_type() {
-		return connect_type;
-	}
-
-	public void setConnect_type(String connect_type) {
-		this.connect_type = connect_type;
-	}
-
-	public String getSource_ip() {
-		return source_ip;
-	}
-
-	public void setSource_ip(String source_ip) {
-		this.source_ip = source_ip;
-	}
-
-	public String getTarget_ip() {
-		return target_ip;
-	}
-
-	public void setTarget_ip(String target_ip) {
-		this.target_ip = target_ip;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getNetwork_type() {
-		return network_type;
-	}
-
-	public void setNetwork_type(String network_type) {
-		this.network_type = network_type;
-	}
-
-	public String getClient_state() {
-		return client_state;
-	}
-
-	public void setClient_state(String client_state) {
-		this.client_state = client_state;
-	}
-
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
-	}
-
-	public String getRequestId() {
-		return requestId;
-	}
-
-	public void setRequestId(String requestId) {
-		this.requestId = requestId;
-	}
-
-	@Override
+	
+/*	@Override
 	public String toString() {
 		JSONObject object = new JSONObject();
 		checkValue();
@@ -223,6 +307,6 @@ public class LogRecord {
 		map.put("LogRequestId", getRequestId());
 		return map;
 
-	}
+	}*/
 
 }

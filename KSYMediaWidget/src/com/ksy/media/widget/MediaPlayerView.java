@@ -635,7 +635,7 @@ public class MediaPlayerView extends RelativeLayout {
 
 	//TODO
 	public void onDestroy() {
-		Log.d("lixp", "MediaPlayerView  636  onDestroy....");
+		Log.d(Constants.LOG_TAG, "MediaPlayerView  636  onDestroy....");
 		new Thread(){
 			@Override
 			public void run() {
@@ -831,7 +831,7 @@ public class MediaPlayerView extends RelativeLayout {
 			mDisplaySizeMode = MediaPlayerMovieRatioView.MOVIE_RATIO_MODE_16_9;
 		}
 		
-//		Log.d("lixp", "790 MediaPlayerView Change Current Width/Heigh Ratio = " + mDisplaySizeMode);
+//		Log.d(Constants.LOG_TAG, "790 MediaPlayerView Change Current Width/Heigh Ratio = " + mDisplaySizeMode);
 		mMediaPlayerVideoView.setVideoLayout(mDisplaySizeMode);
 //		mDisplaySizeMode++;
 	}

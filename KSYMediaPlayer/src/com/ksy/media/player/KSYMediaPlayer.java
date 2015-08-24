@@ -28,6 +28,7 @@ import android.view.SurfaceHolder;
 
 import com.ksy.media.player.annotations.AccessedByNative;
 import com.ksy.media.player.annotations.CalledByNative;
+import com.ksy.media.player.log.LogRecord;
 import com.ksy.media.player.option.AvFormatOption;
 import com.ksy.media.player.pragma.DebugLog;
 import com.ksy.media.player.util.Constants;
@@ -72,7 +73,11 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 	private String mDataSource;
 	private String mFFConcatContent;
-
+    
+	private LogRecord logRecord = new LogRecord();
+	long prepare;
+	long start;
+	
 	private static KSYLibLoader sLocalLibLoader = new KSYLibLoader() {
 
 		@Override
@@ -190,7 +195,8 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 	@Override
 	public void prepareAsync() throws IllegalStateException {
-
+		prepare = System.currentTimeMillis();
+		
 		if (TextUtils.isEmpty(mFFConcatContent)) {
 			_prepareAsync();
 		} else {
@@ -200,11 +206,15 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 	public native void _prepareAsync() throws IllegalStateException;
 
+	//TODO
 	@Override
 	public void start() throws IllegalStateException {
 
 		Log.e(Constants.LOG_TAG, "KSYMediaPlayer start()");
 		stayAwake(true);
+		start = System.currentTimeMillis();
+		
+		logRecord.setFirstFrameTime(start - prepare);
 		_start();
 	}
 
@@ -312,16 +322,22 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	@Override
 	public native boolean isPlaying();
 
-	@Override
 	public native void seekTo(long msec) throws IllegalStateException;
-
+	
 	@Override
 	public native long getCurrentPosition();
 
 	@Override
 	public native long getDuration();
 
-
+	//TODO
+    @Override
+    public void seeksTo(long msec) {
+    	
+    	logRecord.setSeekBegin(System.currentTimeMillis());
+    	seekTo(msec);
+    }
+	
 	@Override
 	public void release() {
 
@@ -333,7 +349,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 	private native void _release();
 
-	//TODO
 	@Override
 	public void reset() {
 
@@ -890,7 +905,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		_setBufferSize(size);
 		
 		//TODO 缓存大小
-		
+		logRecord.setCacheBufferSize(size);
 	};
 
 	@Override
@@ -943,7 +958,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	 */
 	@Override
 	public boolean setCachedDir(String cachedPath) {
-        Log.d("lixp", "cachedPath = " + cachedPath);
+        Log.d(Constants.LOG_TAG, "cachedPath = " + cachedPath);
 		if (null == cachedPath || "".equals(cachedPath)) {
 			Log.e(Constants.LOG_TAG, "the cached path is null , so the streaming cached function failure");
 			return false;
@@ -953,14 +968,14 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			Log.e(Constants.LOG_TAG, "the cached path must be a forder , so the streaming cached function failure");
 			return false;
 		}
-		Log.d("lixp", "file.isFile() = " + file.isFile() + ">>!file.exists() =" + !file.exists() + ">>!file.mkdirs()=" + !file.mkdirs());
+		
 		if (!file.exists()) {
-			if (!file.mkdirs()) {//TODO
+			if (!file.mkdirs()) {
 				Log.e(Constants.LOG_TAG, "the cached forder create fail , so the streaming cached function failure");
 				return false;
 			}
 		} else {
-			Log.e("lixp", "1064  !file.exists() .......");
+			Log.e(Constants.LOG_TAG, "1064  !file.exists() .......");
 		}
 		
 		Log.i(Constants.LOG_TAG, "the cached forder create success , streaming will cached with path :" + cachedPath);
@@ -1003,7 +1018,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			return false;
 		}
 
-		if (!file.mkdirs()) {//TODO
+		if (!file.mkdirs()) {
 			Log.e(Constants.LOG_TAG, "the cached forder recreate failed !");
 			return true;
 		}

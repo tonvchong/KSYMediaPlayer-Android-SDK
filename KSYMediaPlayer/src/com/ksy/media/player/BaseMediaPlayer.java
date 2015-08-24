@@ -1,5 +1,7 @@
 package com.ksy.media.player;
 
+import com.ksy.media.player.log.LogRecord;
+
 /**
  * 
  *   Common IMediaPlayer implement
@@ -13,6 +15,9 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
     private OnErrorListener mOnErrorListener;
     private OnInfoListener mOnInfoListener;
     private OnDRMRequiredListener mOnDRMRequiredListener;
+    
+    private LogRecord logRecord = new LogRecord();
+    
     public final void setOnPreparedListener(OnPreparedListener listener) {
         mOnPreparedListener = listener;
     }
@@ -85,9 +90,15 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
             mOnBufferingUpdateListener.onBufferingUpdate(this, percent);
     }
 
+    //TODO
     protected final void notifyOnSeekComplete() {
         if (mOnSeekCompleteListener != null)
             mOnSeekCompleteListener.onSeekComplete(this);
+        
+        logRecord.setSeekEnd(System.currentTimeMillis());
+        logRecord.setSeekStatus("ok");
+        logRecord.setSeekMessage("SeekComplete");
+        
     }
 
     protected final void notifyOnVideoSizeChanged(int width, int height,
@@ -97,9 +108,17 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
                     sarNum, sarDen);
     }
 
+    //TODO
     protected final boolean notifyOnError(int what, int extra) {
         if (mOnErrorListener != null)
             return mOnErrorListener.onError(this, what, extra);
+        logRecord.setSeekStatus("fail");
+        
+        String playFail = String.valueOf(what) + "_" + String.valueOf(extra);
+        logRecord.setPlayStatus(playFail);
+        
+        logRecord.setSeekMessage(playFail);
+        
         return false;
     }
 

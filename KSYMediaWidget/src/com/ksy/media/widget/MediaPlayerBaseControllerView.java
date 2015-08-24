@@ -15,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.ksy.media.player.util.Constants;
 import com.ksy.media.widget.data.MediaPlayerScreenSize;
 import com.ksy.media.widget.data.MediaPlayerUtils;
 import com.ksy.media.widget.data.MediaPlayerVideoQuality;
@@ -316,7 +317,7 @@ public abstract class MediaPlayerBaseControllerView extends FrameLayout {
 
 						// 当角度值大于设置值时,当做垂直方向处理,反之当做水平方向处理 TODO
 						if (Math.abs(radius) > RADIUS_SLOP) {
-							// Log.d("lixp",
+//							 Log.d(Constants.LOG_TAG,
 							// "MediaPlayerBaseControllerView oldX =" + oldX +
 							// ">>mCurrentGesture =" + mCurrentGesture +
 							// ">>>mNeedGestureVolume=" + mNeedGestureVolume);
@@ -349,7 +350,6 @@ public abstract class MediaPlayerBaseControllerView extends FrameLayout {
 									 */
 
 									if (mWidgetVolumeControl != null) { // 声音控制
-//										Log.d("lixp", "351 basecontrol mWidgetVolumeControl .......");
 										mWidgetVolumeControl
 												.onGestureVolumeChange(
 														distanceY,

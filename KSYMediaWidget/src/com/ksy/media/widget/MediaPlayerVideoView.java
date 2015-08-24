@@ -521,7 +521,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 
 	//TODO
 	protected void release(boolean cleartargetstate) {
-        Log.d("lixp", "524 release .. mpvv"); 
+        Log.d(Constants.LOG_TAG, "524 release .. mpvv"); 
 		if (mMediaPlayer != null) {
 			mMediaPlayer.reset();
 			mMediaPlayer.release();
@@ -652,7 +652,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 
 		Log.e(Constants.LOG_TAG, "seek called=========");
 		if (isInPlaybackState())
-			mMediaPlayer.seekTo(msec);
+			mMediaPlayer.seeksTo(msec);
 	}
 
 	@Override

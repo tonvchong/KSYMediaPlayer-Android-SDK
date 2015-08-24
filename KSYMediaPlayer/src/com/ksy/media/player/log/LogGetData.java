@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import com.ksy.media.player.util.Cpu;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,6 +33,7 @@ public class LogGetData {
 	private static Context mContext;
 	private static TelephonyManager tm;
 	private static Cpu mCpuStats; 
+	private static ActivityManager mActivityManager;
 	
 	private LogGetData() {
 		
@@ -39,6 +41,7 @@ public class LogGetData {
 
 	private LogGetData(Context context) {
 		tm = (TelephonyManager) context.getSystemService("phone");
+		mActivityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 	}
 
 	public static LogGetData getInstance() {
@@ -157,15 +160,6 @@ public class LogGetData {
 	}
 
 	/**
-	 * get system
-	 */
-	public static String getSystem() {
-		String system = "Android";
-
-		return system;
-	}
-
-	/**
 	 * get net state
 	 */
 	public static String getNetState() {
@@ -177,7 +171,7 @@ public class LogGetData {
             switch (ni.getType()) {
             	//wifi 
                 case ConnectivityManager.TYPE_WIFI:
-                	net = "NET_WIFI";  
+                	net = "WIFI";  
                     break;
                 //mobile 网络
                 case ConnectivityManager.TYPE_MOBILE:
@@ -187,7 +181,7 @@ public class LogGetData {
                         case TelephonyManager.NETWORK_TYPE_EDGE: //移动2g
                         case TelephonyManager.NETWORK_TYPE_1xRTT:
                         case TelephonyManager. NETWORK_TYPE_IDEN:
-                        	net = "NET_2G";
+                        	net = "2G";
                             break;
                         case TelephonyManager.NETWORK_TYPE_EVDO_A: //电信3g
                         case TelephonyManager.NETWORK_TYPE_UMTS:
@@ -198,18 +192,18 @@ public class LogGetData {
                         case TelephonyManager.NETWORK_TYPE_EVDO_B:
                         case TelephonyManager.NETWORK_TYPE_EHRPD:
                         case TelephonyManager.NETWORK_TYPE_HSPAP:
-                        	net = "NET_3G";
+                        	net = "3G";
                             break;
                         case TelephonyManager.NETWORK_TYPE_LTE://4G
-                        	net = "NET_4G";
+                        	net = "4G";
                             break;
                         //未知,一般不会出现
                         default:
-                        	net = "NET_UNKNOWN";
+                        	net = "UNKNOWN";
                     }
                     break;
                 default:
-                	net = "NET_UNKNOWN";
+                	net = "UNKNOWN";
             }
         }
 
@@ -241,14 +235,6 @@ public class LogGetData {
 	}
 
 	/**
-	 * get browser info
-	 */
-	public static String userAgent() {
-
-		return "Android";
-	}
-
-	/**
 	 * get deviceip
 	 */
 	public static String getDeviceIp() {
@@ -263,15 +249,6 @@ public class LogGetData {
 			return "ex==" + ex.getMessage();
 		}
 
-	}
-
-	/**
-	 * get serverIp TODO
-	 */
-	public static String getServerIp() {
-		String serverIp = null;
-
-		return serverIp;
 	}
 
 	/**
@@ -290,75 +267,17 @@ public class LogGetData {
 	}
 
 	/**
-	 * get memory usage TODO
+	 * get memory usage
 	 */
 	public static String getMemoryUsage() {
 		String memoryUsage = null;
 
+		int pid = android.os.Process.myPid();
+        android.os.Debug.MemoryInfo[] memoryInfoArray = mActivityManager.getProcessMemoryInfo(new int[] {pid});
+        float i = ((float)memoryInfoArray[0].getTotalPrivateDirty() / 1024);
+        memoryUsage = String.valueOf(i) + "MB";
+        
 		return memoryUsage;
-	}
-
-	/**
-	 * get firstframe TODO
-	 */
-	public static long firstFrameTime(long startTime, long endTime) {
-
-		long firstFrame = endTime - startTime;
-
-		return firstFrame;
-	}
-
-	/**
-	 * get cacheBufferSize TODO
-	 */
-	public static int cacheBufferSize(int cacheSize) {
-
-		return cacheSize;
-	}
-
-	/**
-	 * get seek begin time
-	 */
-	public static long seekBeginTime() {
-		long seekBegin = System.currentTimeMillis();
-
-		return seekBegin;
-	}
-
-	/**
-	 * get seek end time
-	 */
-	public static long seekEndTime() {
-		long seekEnd = System.currentTimeMillis();
-
-		return seekEnd;
-	}
-
-	/**
-	 * get seek statue TODO
-	 */
-	public static String statue(String statue) {
-        String seekStatus = null;
-		
-		return statue;
-	}
-
-	/**
-	 * get seek message TODO
-	 */
-	public static String seekMessage() {
-		String seekMessage = null;
-
-		return seekMessage;
-	}
-
-	/**
-	 * get play failure record TODO
-	 */
-	public static String playFailureRecord() {
-		String playFailure = null;
-
-		return playFailure;
 	}
 
 	/**

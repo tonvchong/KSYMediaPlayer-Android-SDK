@@ -58,14 +58,12 @@ public class Cpu {
 			Process process = null;
 			process = Runtime.getRuntime().exec("top -n 1 -d 1"); //
 			// * we only want to retrieve the top few lines
-            Log.d("lixp", "process =" + process);
 			// * read the output from the command
 			String sLine = new String();
 			ifp = new BufferedReader(new InputStreamReader(
 					process.getInputStream()));
 
 			// * Read all the available output and store it in the class member
-			Log.d("lixp", "ifp.readLine() =" + ifp.readLine());
 			while ((sLine = ifp.readLine()) != null) {
 				// get data from 'top -n 1 -d 1' ,you should parse the result
 				// using keyword of your process package name
@@ -101,12 +99,9 @@ public class Cpu {
 			return;
 		}
 
-		Log.d("lixp", "m_sTopResults = " + m_sTopResults);
 		String[] result = m_sTopResults.split(" ");
 		if (result != null && result.length > 0) {
 			for (String idx : result) {
-				Log.d("lixp", "idx = " + idx);
-				
 				if (idx.indexOf("%") > 0) {
 					m_sProcessCpuUsage = idx;
 					break;

@@ -70,7 +70,7 @@ public interface IMediaPlayer {
 
 	public abstract boolean isPlaying();
 
-	public abstract void seekTo(long msec) throws IllegalStateException;
+	public abstract void seeksTo(long msec) throws IllegalStateException;
 
 	public abstract long getCurrentPosition();
 
