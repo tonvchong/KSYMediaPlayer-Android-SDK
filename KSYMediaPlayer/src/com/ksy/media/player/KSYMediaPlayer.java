@@ -11,6 +11,8 @@ import java.util.TreeMap;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.media.MediaCodecInfo;
@@ -26,8 +28,10 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import com.ksy.media.player.KSYMediaMeta.IjkStreamMeta;
 import com.ksy.media.player.annotations.AccessedByNative;
 import com.ksy.media.player.annotations.CalledByNative;
+import com.ksy.media.player.log.LogClient;
 import com.ksy.media.player.log.LogRecord;
 import com.ksy.media.player.option.AvFormatOption;
 import com.ksy.media.player.pragma.DebugLog;
@@ -74,9 +78,10 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	private String mDataSource;
 	private String mFFConcatContent;
     
-	private LogRecord logRecord = new LogRecord();
 	long prepare;
 	long start;
+	String playMetaData = null;
+	
 	
 	private static KSYLibLoader sLocalLibLoader = new KSYLibLoader() {
 
@@ -116,10 +121,15 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	}
 
 	public KSYMediaPlayer() {
-
 		this(sLocalLibLoader);
 	}
 
+	public KSYMediaPlayer(Context context) {
+		this(sLocalLibLoader);
+		
+		LogClient.getInstance(context.getApplicationContext()).start();
+	}
+	
 	public KSYMediaPlayer(KSYLibLoader libLoader) {
 
 		initPlayer(libLoader);
@@ -215,6 +225,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		start = System.currentTimeMillis();
 		
 		logRecord.setFirstFrameTime(start - prepare);
+		
 		_start();
 	}
 
@@ -371,7 +382,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 		MediaInfo mediaInfo = new MediaInfo();
 		mediaInfo.mMediaPlayerName = "ijkplayer";
-
+		
 		String videoCodecInfo = _getVideoCodecInfo();
 		if (!TextUtils.isEmpty(videoCodecInfo)) {
 			String nodes[] = videoCodecInfo.split(",");
@@ -397,7 +408,13 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		}
 
 		try {
+			//TODO
 			mediaInfo.mMeta = KSYMediaMeta.parse(_getMediaMeta());
+			String format = mediaInfo.mMeta.mFormat;
+			String codec = IjkStreamMeta.getCodecLongNameInline();
+			
+//			playMetaData = format + "_" + codec;
+			
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

@@ -33,6 +33,19 @@ public class LogRecord {
 	private String playStatus;
 	private String playMetaData; //TODO
 	
+	private static LogRecord mInstance;
+	private static Object mLockObject = new Object();
+	
+	public static LogRecord getInstance() {
+		if (null == mInstance) {
+			synchronized (mLockObject) {
+				if (null == mInstance) {
+					mInstance = new LogRecord();
+				}
+			}
+		}
+		return mInstance;
+	}
 	
 	public String getCpu() {
 		return cpu;

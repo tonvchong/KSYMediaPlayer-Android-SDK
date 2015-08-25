@@ -242,9 +242,9 @@ public class KSYMediaMeta {
         public String mType;
 
         // common
-        public String mCodecName;
-        public String mCodecProfile;
-        public String mCodecLongName;
+        public static String mCodecName;
+        public static String mCodecProfile;
+        public static String mCodecLongName;
         public long mBitrate;
 
         // video
@@ -301,7 +301,7 @@ public class KSYMediaMeta {
             }
         }
 
-        public String getCodecLongNameInline() {
+        public static String getCodecLongNameInline() {
             if (!TextUtils.isEmpty(mCodecLongName)) {
                 return mCodecLongName;
             } else if (!TextUtils.isEmpty(mCodecName)) {

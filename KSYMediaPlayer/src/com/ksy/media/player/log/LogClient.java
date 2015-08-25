@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -37,15 +39,13 @@ public class LogClient {
 	private int sendCount; 
 
 	public static LogGetData logGetData;
-	private static LogRecord logRecord = new LogRecord();
-	
+	private LogRecord logRecord = LogRecord.getInstance();
+	private static String pack = null;
 	
 	private LogClient() {
-
 	};
 
 	private LogClient(Context context) {
-		
 	}
 
 	public static LogClient getInstance() {
@@ -60,24 +60,42 @@ public class LogClient {
 		}
 		return mInstance;
 	}
-
-	public static LogClient getInstance(Context context, String pack) {
+	
+	
+	public static LogClient getInstance(Context context) {
 		if (null == mInstance) {
 			synchronized (mLockObject) {
 				if (null == mInstance) {
 					mContext = context;
 					mInstance = new LogClient(context);
-//					syncClient = new SyncHttpClient();
 					logGetData = LogGetData.getInstance(context);
-					addData(pack);
+					pack = getPackName(context);
 				}
 			}
 		}
 		return mInstance;
 	}
+	
+	//get packname
+	public static String getPackName(Context context) {
+		PackageInfo info;
+		String packageName = null;
+		
+	    try {    
+	        info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);    
+	 
+	        packageName = info.packageName;
+	        
+	    } catch (NameNotFoundException e) {    
+	        e.printStackTrace();    
+	    }
+	    
+		return packageName;    
+	}
 
+	
 	//add data  TODO
-	protected static void addData(String pack) { 
+	protected void addData() { 
 		logRecord.setUuid(logGetData.getUuid());
 		
 		logRecord.setCpu(logGetData.getCpuInfo());
@@ -127,6 +145,7 @@ public class LogClient {
 				//第四步：检查相应的状态是否正常：检查状态码的值是200表示正常
 				if (response.getStatusLine().getStatusCode() == 200) {
 					
+					//TODO
 					DBManager.getInstance(mContext).deleteLogs(
 							recordsResult.idBuffer.toString());
 					Log.d(Constants.LOG_TAG, "log send count:" + sendCount
@@ -156,51 +175,9 @@ public class LogClient {
 			e.printStackTrace();
 			Log.e(Constants.LOG_TAG, "httpPost error ===" + e);
 		}
-		
-		
-		/*syncClient.addHeader("accept-encoding", "gzip, deflate");
-		syncClient.post(mContext, Constants.LOG_SERVER_URL, byteArrayEntity,
-				"text/plain", new AsyncHttpResponseHandler() {
-
-					@Override
-					public void onSuccess(int paramInt,
-							Header[] paramArrayOfHeader, byte[] paramArrayOfByte) {
-						Log.d(Constants.LOG_TAG,
-								"log send success, response code = " + paramInt);
-						DBManager.getInstance(mContext).deleteLogs(
-								recordsResult.idBuffer.toString());
-						Log.d(Constants.LOG_TAG, "log send count:" + sendCount
-								+ ",next count : " + (allCount - sendCount));
-						recordsResult.release();
-						if (isNeedloop) {
-							if (allCount - sendCount > 0) {
-								sendRecord(allCount - sendCount);
-							} else {
-								Log.d(Constants.LOG_TAG,
-										"more than 120 mode, last send all over");
-							}
-						} else {
-							Log.d(Constants.LOG_TAG,
-									"less than 120 mode, send all over");
-						}
-					}
-
-					@Override
-					public void onFailure(int paramInt,
-							Header[] paramArrayOfHeader,
-							byte[] paramArrayOfByte, Throwable paramThrowable) {
-						Log.d(Constants.LOG_TAG,
-								"log send failure, response code = " + paramInt);
-						if (paramArrayOfByte != null) {
-							Log.d(Constants.LOG_TAG, ",response = "
-									+ new String(paramArrayOfByte));
-						}
-					}
-				});*/
-
-
 	}
 
+	//TODO
 	private String makeJsonLog(String recordsJson) {
 		JSONArray array = new JSONArray();
 		String[] singlgLogJson = recordsJson.split("/n");
@@ -216,6 +193,7 @@ public class LogClient {
 		return array.toString();
 	}
 
+	
 	public void start() {
 		if (mStarted) {
 			return;
@@ -223,13 +201,12 @@ public class LogClient {
 		mStarted = true;
 		timer = new Timer();
 		timer.schedule(new TimerTask() {
-
 			@Override
 			public void run() {
-				// Judge the way of send
-				// For test
+				// Judge the way of send for test
 				int current_count = DBManager.getInstance(mContext)
 						.queryCount();
+				
 				Log.d(Constants.LOG_TAG, "send schedule, current thread id = "
 						+ Thread.currentThread().getId() + ",log count = "
 						+ current_count);
@@ -250,11 +227,11 @@ public class LogClient {
 				} else {
 					Log.d(Constants.LOG_TAG, "network unvaliable");
 				}
-
 			}
 		}, 5000, TIMER_INTERVAL);
 	}
 
+	//TODO
 	private void sendRecord(int all_count) {
 		isNeedloop = all_count >= LOG_ONCE_LIMIT;
 		sendCount = isNeedloop ? LOG_ONCE_LIMIT : all_count;

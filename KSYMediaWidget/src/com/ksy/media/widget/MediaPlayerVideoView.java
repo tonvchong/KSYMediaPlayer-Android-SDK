@@ -192,6 +192,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 		mVideoLayout = layout;
 	}
 
+
 	private void initVideoView(Context ctx) {
 
 		mContext = ctx;
@@ -262,7 +263,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 			mMediaInfo = null;
 			KSYMediaPlayer ksyMediaPlayer = null;
 			if (mUri != null) {
-				ksyMediaPlayer = new KSYMediaPlayer();
+				ksyMediaPlayer = new KSYMediaPlayer(mContext);
 				ksyMediaPlayer.setAvOption(AvFormatOption_HttpDetectRangeSupport.Disable);
 				ksyMediaPlayer.setOverlayFormat(AvFourCC.SDL_FCC_RV32);
 				ksyMediaPlayer.setAvCodecOption("skip_loop_filter", "48");

@@ -16,7 +16,7 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
     private OnInfoListener mOnInfoListener;
     private OnDRMRequiredListener mOnDRMRequiredListener;
     
-    private LogRecord logRecord = new LogRecord();
+    public LogRecord logRecord = LogRecord.getInstance();
     
     public final void setOnPreparedListener(OnPreparedListener listener) {
         mOnPreparedListener = listener;

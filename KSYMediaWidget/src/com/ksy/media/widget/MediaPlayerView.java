@@ -34,7 +34,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ksy.media.player.IMediaPlayer;
-import com.ksy.media.player.KSYMediaPlayer;
 import com.ksy.media.player.util.Constants;
 import com.ksy.media.player.util.DRMKey;
 import com.ksy.media.player.util.DRMRetrieverManager;
@@ -125,7 +124,6 @@ public class MediaPlayerView extends RelativeLayout {
 	
 	private RelativeLayout layoutPop;
 	private Handler mHandler = new Handler();
-	private KSYMediaPlayer mKSYMediaPlayer = new KSYMediaPlayer();
 
 	public MediaPlayerView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -183,7 +181,6 @@ public class MediaPlayerView extends RelativeLayout {
 		}
 
 		/* 初始化UI组件 */
-		
 		if (KsyConstants.SCREEN_VIEW_COLOR == 1) { //蓝色  
 			this.mRootView = (ViewGroup) mLayoutInflater.inflate(
 					R.layout.blue_media_player_view, null);
