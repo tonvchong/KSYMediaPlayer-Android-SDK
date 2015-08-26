@@ -1,6 +1,7 @@
 package com.ksy.media.player.db;
 
 import com.ksy.media.player.log.LogBean;
+import com.ksy.media.player.util.Constants;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.test.mock.MockContext;
+import android.util.Log;
 
 public class DBManager {
 
@@ -163,6 +165,7 @@ public class DBManager {
 					String logContent = cursor
 							.getString(cursor
 									.getColumnIndex(DBConstant.TABLE_LOG_COLUMN_CONTENT));
+					Log.d(Constants.LOG_TAG, "logId=" + logId + ">><<logContent=" + logContent);
 					recordResults.idBuffer.append(logId);
 					recordResults.idBuffer.append("/n");
 					recordResults.contentBuffer.append(logContent);

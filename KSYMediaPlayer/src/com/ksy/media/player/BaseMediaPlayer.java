@@ -1,6 +1,11 @@
 package com.ksy.media.player;
 
+import android.util.Log;
+
+import com.ksy.media.player.exception.Ks3ClientException;
+import com.ksy.media.player.log.LogClient;
 import com.ksy.media.player.log.LogRecord;
+import com.ksy.media.player.util.Constants;
 
 /**
  * 
@@ -97,7 +102,18 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
         
         logRecord.setSeekEnd(System.currentTimeMillis());
         logRecord.setSeekStatus("ok");
-        logRecord.setSeekMessage("SeekComplete");
+        logRecord.setSeekMessage("SeekComplete"); //TODO 需要底层对接
+        
+        Log.e(Constants.LOG_TAG, "seekend =" + logRecord.getSeekEndJson());
+        Log.e(Constants.LOG_TAG, "seekMessage =" + logRecord.getSeekMessage());
+        Log.e(Constants.LOG_TAG, "seekStatus =" + logRecord.getSeekStatus());
+        try {
+			LogClient.getInstance().put(logRecord.getSeekEndJson());
+			LogClient.getInstance().put(logRecord.getSeekMessage());
+			LogClient.getInstance().put(logRecord.getSeekStatus());
+		} catch (Ks3ClientException e) {
+			e.printStackTrace();
+		}
         
     }
 

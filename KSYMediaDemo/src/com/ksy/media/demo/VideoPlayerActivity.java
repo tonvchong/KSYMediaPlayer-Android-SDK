@@ -96,12 +96,12 @@ public class VideoPlayerActivity extends Activity implements
 		playerView.setPlayerViewCallback(this);
 		// String path = "rtmp://192.168.135.185:1935/myLive/guoyankai";
 		// String path = "http://live.3gv.ifeng.com/zixun.m3u8"; // vod		
-		 String path = "http://maichang.kssws.ks-cdn.com/upload20150716161913.mp4";
+//		 String path = "http://maichang.kssws.ks-cdn.com/upload20150716161913.mp4";
 //		String path = "http://ceshi.kssws.ks-cdn.com/bb.mp4";
 
 		File file = new File(Environment.getExternalStorageDirectory(),
-				"aa.mp4");
-
+				"Love.mp4");
+		String path = file.getAbsolutePath();
 		// Love.mp4 
 		// avitest.avi
 		// flvtest.flv

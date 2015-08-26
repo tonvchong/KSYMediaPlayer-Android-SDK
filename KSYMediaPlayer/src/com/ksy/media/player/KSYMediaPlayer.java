@@ -31,6 +31,7 @@ import android.view.SurfaceHolder;
 import com.ksy.media.player.KSYMediaMeta.IjkStreamMeta;
 import com.ksy.media.player.annotations.AccessedByNative;
 import com.ksy.media.player.annotations.CalledByNative;
+import com.ksy.media.player.exception.Ks3ClientException;
 import com.ksy.media.player.log.LogClient;
 import com.ksy.media.player.log.LogRecord;
 import com.ksy.media.player.option.AvFormatOption;
@@ -81,7 +82,8 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	long prepare;
 	long start;
 	String playMetaData = null;
-	
+	private Context mContext;
+	private LogClient logClient;
 	
 	private static KSYLibLoader sLocalLibLoader = new KSYLibLoader() {
 
@@ -124,10 +126,29 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		this(sLocalLibLoader);
 	}
 
+	//TODO
 	public KSYMediaPlayer(Context context) {
 		this(sLocalLibLoader);
+		mContext = context;
 		
-		LogClient.getInstance(context.getApplicationContext()).start();
+		logClient = LogClient.getInstance(context.getApplicationContext());
+		logClient.start();
+		logClient.addData();
+		
+		logClient.saveUsageData();
+		
+		try {
+			Log.e(Constants.LOG_TAG, "BaseData = " + logRecord.getBaseDataJson());
+			Log.e(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
+			Log.e(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
+			logClient.put(logRecord.getBaseDataJson());
+			logClient.put(logRecord.getPlayStatusJson());
+			logClient.put(logRecord.getNetStateJson());
+			
+		} catch (Ks3ClientException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public KSYMediaPlayer(KSYLibLoader libLoader) {
@@ -225,6 +246,13 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		start = System.currentTimeMillis();
 		
 		logRecord.setFirstFrameTime(start - prepare);
+		Log.e(Constants.LOG_TAG, logRecord.getFirstFrameTimeJson());
+		
+		try {
+			logClient.put(logRecord.getFirstFrameTimeJson());
+		} catch (Ks3ClientException e) {
+			e.printStackTrace();
+		}
 		
 		_start();
 	}
@@ -346,6 +374,15 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
     public void seeksTo(long msec) {
     	
     	logRecord.setSeekBegin(System.currentTimeMillis());
+    	
+    	Log.e(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
+    	
+    	try {
+			logClient.put(logRecord.getSeekBeginJson());
+		} catch (Ks3ClientException e) {
+			e.printStackTrace();
+		}
+    	
     	seekTo(msec);
     }
 	
@@ -413,7 +450,8 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			String format = mediaInfo.mMeta.mFormat;
 			String codec = IjkStreamMeta.getCodecLongNameInline();
 			
-//			playMetaData = format + "_" + codec;
+			playMetaData = format + "_" + codec;
+			logRecord.setPlayMetaData(playMetaData);
 			
 		} catch (Throwable e) {
 			e.printStackTrace();

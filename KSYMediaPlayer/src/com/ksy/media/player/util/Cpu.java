@@ -64,14 +64,19 @@ public class Cpu {
 					process.getInputStream()));
 
 			// * Read all the available output and store it in the class member
-			while ((sLine = ifp.readLine()) != null) {
-				// get data from 'top -n 1 -d 1' ,you should parse the result
-				// using keyword of your process package name
-				if (sLine.indexOf(m_Package) >= 0) {
-					this.m_sTopResults = sLine;
-					break;
+			if (m_Package != null) {
+				while ((sLine = ifp.readLine()) != null) {
+					// get data from 'top -n 1 -d 1' ,you should parse the result
+					// using keyword of your process package name
+					if (sLine.indexOf(m_Package) >= 0) {
+						this.m_sTopResults = sLine;
+						break;
+					}
 				}
+			} else {
+				Log.d(Constants.LOG_TAG, "m_Package is  null ");
 			}
+			
 		} catch (IOException exp) {
 
 		} finally {

@@ -224,7 +224,7 @@ public class LogRecord {
 	}
 
 
-	public void copyRecord(LogRecord record) {
+	/*public void copyRecord(LogRecord record) {
 		setCpu(record.getCpu());
 		setMemory(record.getMemory());
 		setCore(record.getCore());
@@ -247,7 +247,7 @@ public class LogRecord {
         setSeekMessage(record.getSeekMessage());
         setSeekStatus(record.getPlayStatus());
         setPlayMetaData(record.getPlayMetaData());
-	}
+	}*/
 
 	
 /*	@Override
@@ -322,4 +322,200 @@ public class LogRecord {
 
 	}*/
 
+	
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"101\",\"cpu\":\"cpu\",\"memory\":\"memory\",\"core\":\"core\",\"device\":\"device\",\"system\":\"system\",\"userAgent\":\"userAgent\",\"gmt\":\"gmt\"}"
+	public String getBaseDataJson() {
+      JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate()); //TODO
+		    obj.put("type", "101");
+		    obj.put("cpu", getCpu());
+		    obj.put("memory", getMemory());
+		    obj.put("core", getCore());
+		    obj.put("device", getDevice());
+		    obj.put("system", getSystem());
+		    obj.put("userAgent", getUserAgent());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+	
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"102\",\"playStatus\":\"playStatus\",\"gmt\":\"gmt\"}"
+	public String getPlayStatusJson() {
+       JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate()); //TODO
+		    obj.put("type", "102");
+		    obj.put("playStatus", getPlayStatus());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+	
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"103\",\"firstFrameTime\":\"firstFrameTime\",\"playMetaData\":\"playMetaData\",\"gmt\":\"gmt\"}"
+	public String getFirstFrameTimeJson() {
+       JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate());
+		    obj.put("type", "103");
+		    obj.put("firstFrameTime", getFirstFrameTime());
+		    obj.put("playMetaData", getPlayMetaData());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+	
+	
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"200\",\"field\":\"net\",\"net\":\"net\",\"deviceIp\":\"deviceIp\",\"serverIp\":\"serverIp\",\"gmt\":\"gmt\"}"
+	public String getNetStateJson() {
+       JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate());
+		    obj.put("type", "200");
+		    obj.put("field", "net");
+		    obj.put("net", getNet());
+		    obj.put("deviceIp", getDeviceIp());
+		    obj.put("serverIp", getServerIp());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+	
+	
+	//TODO "{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"200\",\"field\":\"usage\",\"deviceUsage\":\"{"cpuUsage":"cpuUsage","memoryUsage":"memoryUsage"}\",\"gmt\":\"gmt\"}" 
+	public String getCapabilityJson() {
+		JSONObject obj = new JSONObject();
+		
+		try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate());
+			obj.put("type", "200");
+			obj.put("field", "usage");
+			obj.put("deviceUsage", getCurrentUsage());
+			obj.put("gmt", getGmt());
+			    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return obj.toString();
+	}
+	
+	private Object getCurrentUsage() {
+        JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("cpuUsage", getCpuUsage());
+			obj.put("memoryUsage", getMemoryUsage());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj;
+	}
+	
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"201\",\"field\":\"seekbegin\",\"seekBegin\":\"seekBegin\",\"gmt\":\"gmt\"}"
+	public String getSeekBeginJson() {
+        JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate());
+		    obj.put("type", "201");
+		    obj.put("field", "seekbegin");
+		    obj.put("seekBegin", getSeekBegin());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+	
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"202\",\"field\":\"seekend\",\"seekEnd\":\"seekEnd\",\"gmt\":\"gmt\"}"
+	public String getSeekEndJson() {
+        JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate());
+		    obj.put("type", "202");
+		    obj.put("field", "seekend");
+		    obj.put("seekEnd", getSeekEnd());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+	
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"200\",\"field\":\"seekrecord\",\"seekStatus\":\"seekStatus\",\"gmt\":\"gmt\"}"
+	public String getSeekStateJson() {
+        JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate());
+		    obj.put("type", "200");
+		    obj.put("field", "seekrecord");
+		    obj.put("seekStatus", getSeekStatus());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"200\",\"field\":\"seekdetail\",\"seekMessage\":\"seekMessage\",\"gmt\":\"gmt\"}"
+	public String getSeekDetailJson() {
+        JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate());
+		    obj.put("type", "200");
+		    obj.put("field", "seekdetail");
+		    obj.put("seekMessage", getSeekMessage());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+	
+	
 }
+
+

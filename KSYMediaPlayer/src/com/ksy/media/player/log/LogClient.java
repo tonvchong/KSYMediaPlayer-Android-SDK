@@ -29,12 +29,15 @@ import com.loopj.android.http.SyncHttpClient;
 public class LogClient {
 	private static final int LOG_ONCE_LIMIT = 120;
 	private static final long TIMER_INTERVAL = 60 * 60 * 1000;
+	private static final long SAVE_TIME_INTERVAL = 60 * 1000;
 	private static LogClient mInstance;
 	private static Object mLockObject = new Object();
 //	private static SyncHttpClient syncClient;
 	private static Context mContext;
 	private volatile boolean mStarted = false;
+	private volatile boolean mSaveStarted = false;
 	private Timer timer;
+	private Timer saveTimer;
 	private boolean isNeedloop;
 	private int sendCount; 
 
@@ -95,7 +98,7 @@ public class LogClient {
 
 	
 	//add data  TODO
-	protected void addData() { 
+	public void addData() { 
 		logRecord.setUuid(logGetData.getUuid());
 		
 		logRecord.setCpu(logGetData.getCpuInfo());
@@ -103,9 +106,9 @@ public class LogClient {
 		logRecord.setCpuUsage(logGetData.getCpuUsage(pack));
 		logRecord.setMemory(logGetData.getMemory());
 		logRecord.setMemoryUsage(logGetData.getMemoryUsage());
-		logRecord.setDate(logGetData.currentTimeGmt());
+		logRecord.setDate(logGetData.currentTimeGmt());//
 		logRecord.setDevice(logGetData.getImei());
-		logRecord.setGmt(logGetData.getGmt());
+		logRecord.setGmt(logGetData.getGmt());//
 		logRecord.setNet(logGetData.getNetState());
 		logRecord.setDeviceIp(logGetData.getDeviceIp());
 		logRecord.setSystem("Android");
@@ -118,7 +121,7 @@ public class LogClient {
 	private void sendRecordJson(final RecordResult recordsResult,
 			final int sendCount, final int allCount, final boolean isNeedloop) {
 		ByteArrayEntity byteArrayEntity = null;
-		String jsonString = makeJsonLog(recordsResult.contentBuffer.toString());
+		String jsonString = makeJsonLog(recordsResult.contentBuffer.toString()); //TODO 取什么
 		try {
 			byteArrayEntity = new ByteArrayEntity(GzipUtil.compress(jsonString)
 					.toByteArray());
@@ -132,7 +135,6 @@ public class LogClient {
 		HttpClient httpClient = new DefaultHttpClient();
 		//第二步：生成使用POST方法的请求对象
 		HttpPost httpPost = new HttpPost(Constants.LOG_SERVER_URL);
-//		httpPost.setHeader("Content-Type", "text/plain");
 		httpPost.addHeader("accept-encoding", "gzip, deflate");
 		
 		try {
@@ -193,6 +195,28 @@ public class LogClient {
 		return array.toString();
 	}
 
+	//TODO
+	public void saveUsageData() {
+		if (mSaveStarted) {
+			return;
+		}
+		
+		mSaveStarted = true;
+		saveTimer = new Timer();
+		saveTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					Log.e(Constants.LOG_TAG, "logRecord.getCapabilityJson() =" + logRecord.getCapabilityJson());
+					mInstance.put(logRecord.getCapabilityJson());
+				} catch (Ks3ClientException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		}, 5000, SAVE_TIME_INTERVAL);
+	}
+	
 	
 	public void start() {
 		if (mStarted) {
@@ -249,10 +273,22 @@ public class LogClient {
 		if (!mStarted) {
 			return;
 		}
+		
+		if (!mSaveStarted) {
+			return;
+		}
+		
 		if (null != timer) {
 			timer.cancel();
 		}
+		
+		if (null != saveTimer) {
+			saveTimer.cancel();
+		}
+		
 		mStarted = false;
+		mSaveStarted = false;
+		
 	}
 
 	public void put(String message) throws Ks3ClientException {
