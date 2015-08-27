@@ -59,7 +59,7 @@ public class DBManager {
 	 */
 	public void insertLog(String log) {
 		synchronized (mLockObject) {
-			if (queryCount() < 1200) {
+			if (queryCount() < 5000) { //1200 TODO
 				mDatabase.beginTransaction();
 				// mInsertStatement.clearBindings();
 				mInsertStatement.bindString(1, log);
@@ -165,7 +165,7 @@ public class DBManager {
 					String logContent = cursor
 							.getString(cursor
 									.getColumnIndex(DBConstant.TABLE_LOG_COLUMN_CONTENT));
-					Log.d(Constants.LOG_TAG, "logId=" + logId + ">><<logContent=" + logContent);
+//					Log.d(Constants.LOG_TAG, "logId=" + logId + ">>>>><<logContent=" + logContent);
 					recordResults.idBuffer.append(logId);
 					recordResults.idBuffer.append("/n");
 					recordResults.contentBuffer.append(logContent);

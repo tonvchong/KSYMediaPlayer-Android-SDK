@@ -104,15 +104,17 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
         logRecord.setSeekStatus("ok");
         logRecord.setSeekMessage("SeekComplete"); //TODO 需要底层对接
         
-        Log.e(Constants.LOG_TAG, "seekend =" + logRecord.getSeekEndJson());
-        Log.e(Constants.LOG_TAG, "seekMessage =" + logRecord.getSeekMessage());
-        Log.e(Constants.LOG_TAG, "seekStatus =" + logRecord.getSeekStatus());
+        Log.d(Constants.LOG_TAG, "seekend =" + logRecord.getSeekEndJson());
+        Log.d(Constants.LOG_TAG, "seekMessage =" + logRecord.getSeekDetailJson());
+        Log.d(Constants.LOG_TAG, "seekStatus =" + logRecord.getSeekStateJson());
+        
         try {
 			LogClient.getInstance().put(logRecord.getSeekEndJson());
-			LogClient.getInstance().put(logRecord.getSeekMessage());
-			LogClient.getInstance().put(logRecord.getSeekStatus());
+			LogClient.getInstance().put(logRecord.getSeekDetailJson());
+			LogClient.getInstance().put(logRecord.getSeekStateJson());
 		} catch (Ks3ClientException e) {
 			e.printStackTrace();
+			Log.e(Constants.LOG_TAG, "BaseMediaPlayer e =" + e);
 		}
         
     }

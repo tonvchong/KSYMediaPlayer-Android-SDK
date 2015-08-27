@@ -18,7 +18,7 @@ public class LogRecord {
 	private String system;
 	private String net;
 	private String gmt;
-	private String date;
+	private long date;
 	private String userAgent;
 	private String deviceIp;
 	private String serverIp; //TODO
@@ -33,6 +33,7 @@ public class LogRecord {
 	private String playStatus;
 	private String playMetaData; //TODO
 	
+
 	private static LogRecord mInstance;
 	private static Object mLockObject = new Object();
 	
@@ -111,11 +112,11 @@ public class LogRecord {
 		this.gmt = gmt;
 	}
 
-	public String getDate() {
+	public long getDate() {
 		return date;
 	}
 
-	public void setDate(String date) {
+	public void setDate(long date) {
 		this.date = date;
 	}
 
@@ -373,6 +374,7 @@ public class LogRecord {
 			obj.put("date", getDate());
 		    obj.put("type", "103");
 		    obj.put("firstFrameTime", getFirstFrameTime());
+		    obj.put("cacheBufferSize", getCacheBufferSize()); //String.valueOf(getCacheBufferSize())
 		    obj.put("playMetaData", getPlayMetaData());
 		    obj.put("gmt", getGmt());
 		    
@@ -406,7 +408,7 @@ public class LogRecord {
 	}
 	
 	
-	//TODO "{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"200\",\"field\":\"usage\",\"deviceUsage\":\"{"cpuUsage":"cpuUsage","memoryUsage":"memoryUsage"}\",\"gmt\":\"gmt\"}" 
+	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"200\",\"field\":\"usage\",\"deviceUsage\":\"{"cpuUsage":"cpuUsage","memoryUsage":"memoryUsage"}\",\"gmt\":\"gmt\"}" 
 	public String getCapabilityJson() {
 		JSONObject obj = new JSONObject();
 		
@@ -448,7 +450,7 @@ public class LogRecord {
 			obj.put("date", getDate());
 		    obj.put("type", "201");
 		    obj.put("field", "seekbegin");
-		    obj.put("seekBegin", getSeekBegin());
+		    obj.put("seekBegin", getSeekBegin()); //String.valueOf(getSeekBegin())
 		    obj.put("gmt", getGmt());
 		    
 		} catch (JSONException e) {

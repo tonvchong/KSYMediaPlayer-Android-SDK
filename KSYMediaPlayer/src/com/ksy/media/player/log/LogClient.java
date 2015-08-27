@@ -1,6 +1,10 @@
 package com.ksy.media.player.log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.http.HttpResponse;
@@ -28,8 +32,8 @@ import com.loopj.android.http.SyncHttpClient;
 
 public class LogClient {
 	private static final int LOG_ONCE_LIMIT = 120;
-	private static final long TIMER_INTERVAL = 60 * 60 * 1000;
-	private static final long SAVE_TIME_INTERVAL = 60 * 1000;
+	private static final long TIMER_INTERVAL = 60 * 60 * 1000; //2 * 1000;
+//	private static final long SAVE_TIME_INTERVAL = 10 * 1000; //用户可选
 	private static LogClient mInstance;
 	private static Object mLockObject = new Object();
 //	private static SyncHttpClient syncClient;
@@ -113,21 +117,52 @@ public class LogClient {
 		logRecord.setDeviceIp(logGetData.getDeviceIp());
 		logRecord.setSystem("Android");
 		logRecord.setUserAgent("Android");
-//		logRecord.setServerIp(serverIp); //TODO
+		logRecord.setServerIp("10.0.2.2"); //TODO
 		
+	}
+	
+	/**
+	* @param srcObj 源字节数组转换成String的字节数组
+	* @return
+	*/
+	public static byte[]  StringToBt(String str) {
+	    return StringToByte(str, "UTF-8");
+	}
+
+
+	public static byte[] StringToByte(String str, String charEncode) {
+		byte[] destObj = null;
+		try {
+		if(null == str || str.trim().equals("")){ 
+		  destObj = new byte[0]; 
+		  return destObj; 
+		  
+		}else{ 
+		  destObj = str.getBytes(charEncode);
+		}
+		} catch (UnsupportedEncodingException e) {
+		  e.printStackTrace();
+		}
+		return destObj;
 	}
 	
 	//TODO
 	private void sendRecordJson(final RecordResult recordsResult,
 			final int sendCount, final int allCount, final boolean isNeedloop) {
 		ByteArrayEntity byteArrayEntity = null;
-		String jsonString = makeJsonLog(recordsResult.contentBuffer.toString()); //TODO 取什么
+//		String jsonString = makeJsonLog(recordsResult.contentBuffer.toString()); //TODO 取什么
+		String jsonString = recordsResult.contentBuffer.toString(); //单条或多条
+		Log.d(Constants.LOG_TAG, "jsonString =" + jsonString);
+		
 		try {
 			byteArrayEntity = new ByteArrayEntity(GzipUtil.compress(jsonString)
 					.toByteArray());
-		} catch (IOException e) {
+			
+//			byteArrayEntity = new ByteArrayEntity(StringToBt(jsonString)); //单条
+			
+		} catch (Exception e) {
 			e.printStackTrace();
-			Log.d(Constants.LOG_TAG, "gzip is failed, send log ingored");
+			Log.e(Constants.LOG_TAG, "gzip is failed, send log ingored e" + e);
 			return;
 		}
 
@@ -137,6 +172,8 @@ public class LogClient {
 		HttpPost httpPost = new HttpPost(Constants.LOG_SERVER_URL);
 		httpPost.addHeader("accept-encoding", "gzip, deflate");
 		
+//		httpPost.addHeader("Content-Type", "application/json"); //单条
+		
 		try {
 			//将请求体放置在请求对象当中
 			httpPost.setEntity(byteArrayEntity);
@@ -144,24 +181,32 @@ public class LogClient {
 			try {
 				//第三步：执行请求对象，获取服务器发还的相应对象
 				HttpResponse response = httpClient.execute(httpPost);
+				String result = convertStreamToString(response.getEntity().getContent());
+				
+				Log.d(Constants.LOG_TAG, "result = " + result);
 				//第四步：检查相应的状态是否正常：检查状态码的值是200表示正常
 				if (response.getStatusLine().getStatusCode() == 200) {
 					
+					Log.d(Constants.LOG_TAG, "recordsResult.idBuffer 1 =" + recordsResult.idBuffer.toString());
 					//TODO
 					DBManager.getInstance(mContext).deleteLogs(
 							recordsResult.idBuffer.toString());
-					Log.d(Constants.LOG_TAG, "log send count:" + sendCount
+					
+					Log.d(Constants.LOG_TAG, " 200  log send count:" + sendCount
 							+ ",next count : " + (allCount - sendCount));
 					
 					recordsResult.release();
 					if (isNeedloop) {
+						
 						if (allCount - sendCount > 0) {
+							Log.d(Constants.LOG_TAG, "allCount - sendCount > 0");
 							sendRecord(allCount - sendCount);
 						} else {
 							Log.d(Constants.LOG_TAG, "more than 120 mode, last send all over");
 						}
 					} else {
 						Log.d(Constants.LOG_TAG, "less than 120 mode, send all over");
+						sendRecord(allCount);
 					}
 					
 				} else {
@@ -179,10 +224,34 @@ public class LogClient {
 		}
 	}
 
+	 //InputStream convert string
+	 public String convertStreamToString(InputStream is) {
+		
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(is));   
+		StringBuilder sb = new StringBuilder();      
+
+		String line = null;   
+
+		try {   
+			while ((line = reader.readLine()) != null) {   
+				sb.append(line + "/n");   
+			}
+		} catch (IOException e) {   
+			e.printStackTrace();   
+		} finally {   
+			try {   
+				is.close();   
+			} catch (IOException e) {   
+				e.printStackTrace();   
+			}   
+		}   
+		return sb.toString();   
+	}  
+	 
 	//TODO
 	private String makeJsonLog(String recordsJson) {
 		JSONArray array = new JSONArray();
-		String[] singlgLogJson = recordsJson.split("/n");
+		String[] singlgLogJson = recordsJson.split("/n"); //  /r/n
 		for (int i = 0; i < singlgLogJson.length; i++) {
 			JSONObject record;
 			try {
@@ -196,7 +265,7 @@ public class LogClient {
 	}
 
 	//TODO
-	public void saveUsageData() {
+	public void saveUsageData(int time) {
 		if (mSaveStarted) {
 			return;
 		}
@@ -207,14 +276,14 @@ public class LogClient {
 			@Override
 			public void run() {
 				try {
-					Log.e(Constants.LOG_TAG, "logRecord.getCapabilityJson() =" + logRecord.getCapabilityJson());
+					Log.d(Constants.LOG_TAG, "logRecord.getCapabilityJson() =" + logRecord.getCapabilityJson());
 					mInstance.put(logRecord.getCapabilityJson());
 				} catch (Ks3ClientException e) {
 					e.printStackTrace();
+					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
 				}
-				
 			}
-		}, 5000, SAVE_TIME_INTERVAL);
+		}, 5000, time);
 	}
 	
 	
@@ -245,11 +314,11 @@ public class LogClient {
 							Log.d(Constants.LOG_TAG, "no record");
 						}
 					} else {
-						Log.d(Constants.LOG_TAG,
+						Log.e(Constants.LOG_TAG,
 								"network valiable,type not wifi");
 					}
 				} else {
-					Log.d(Constants.LOG_TAG, "network unvaliable");
+					Log.e(Constants.LOG_TAG, "network unvaliable");
 				}
 			}
 		}, 5000, TIMER_INTERVAL);
@@ -265,7 +334,7 @@ public class LogClient {
 				&& !TextUtils.isEmpty(recordResults.idBuffer.toString())) {
 			sendRecordJson(recordResults, sendCount, all_count, isNeedloop);
 		} else {
-			Log.d(Constants.LOG_TAG, "read record result is not correct");
+			Log.e(Constants.LOG_TAG, "read record result is not correct");
 		}
 	}
 
@@ -292,12 +361,12 @@ public class LogClient {
 	}
 
 	public void put(String message) throws Ks3ClientException {
-		Log.d(Constants.LOG_TAG, "new log: " + message);
+		Log.d(Constants.LOG_TAG, "put() new log: " + message);
 		if (jsonCheck(message)) {
 			DBManager.getInstance(mContext).insertLog(message);
 		} else {
 			throw new Ks3ClientException(
-					"new log format is not correct, sdk will ingore it");
+					"put() new log format is not correct, sdk will ingore it");
 		}
 	}
 
@@ -306,6 +375,7 @@ public class LogClient {
 		try {
 			JSONObject object = new JSONObject(message);
 		} catch (JSONException e) {
+			Log.e(Constants.LOG_TAG, "jsonCheck  e ==" + e);
 			isJson = false;
 		}
 		return isJson;
@@ -313,7 +383,7 @@ public class LogClient {
 
 	public void put(LogRecord record) throws Ks3ClientException {
 		if (record != null) {
-			Log.d(Constants.LOG_TAG, "new log: " + record.toString());
+			Log.d(Constants.LOG_TAG, "put() new log: " + record.toString());
 			DBManager.getInstance(mContext).insertLog(record.toString());
 		} else {
 			throw new Ks3ClientException("record can not be null");

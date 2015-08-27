@@ -84,6 +84,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	String playMetaData = null;
 	private Context mContext;
 	private LogClient logClient;
+	private int mGetUsageTime;
 	
 	private static KSYLibLoader sLocalLibLoader = new KSYLibLoader() {
 
@@ -127,27 +128,15 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	}
 
 	//TODO
-	public KSYMediaPlayer(Context context) {
+	public KSYMediaPlayer(Context context, int time) {
 		this(sLocalLibLoader);
 		mContext = context;
+		
+		mGetUsageTime = time;
 		
 		logClient = LogClient.getInstance(context.getApplicationContext());
 		logClient.start();
 		logClient.addData();
-		
-		logClient.saveUsageData();
-		
-		try {
-			Log.e(Constants.LOG_TAG, "BaseData = " + logRecord.getBaseDataJson());
-			Log.e(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
-			Log.e(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
-			logClient.put(logRecord.getBaseDataJson());
-			logClient.put(logRecord.getPlayStatusJson());
-			logClient.put(logRecord.getNetStateJson());
-			
-		} catch (Ks3ClientException e) {
-			e.printStackTrace();
-		}
 		
 	}
 	
@@ -228,6 +217,22 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	public void prepareAsync() throws IllegalStateException {
 		prepare = System.currentTimeMillis();
 		
+        logClient.saveUsageData(mGetUsageTime);
+		
+		try {
+			Log.d(Constants.LOG_TAG, "BaseData = " + logRecord.getBaseDataJson());
+			Log.d(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
+			Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
+			logClient.put(logRecord.getBaseDataJson());
+			logClient.put(logRecord.getPlayStatusJson());
+			logClient.put(logRecord.getNetStateJson());
+			
+		} catch (Ks3ClientException e) {
+			e.printStackTrace();
+			Log.e(Constants.LOG_TAG, " KSYMediaPlayer  e=" + e);
+		}
+		
+		
 		if (TextUtils.isEmpty(mFFConcatContent)) {
 			_prepareAsync();
 		} else {
@@ -241,17 +246,18 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	@Override
 	public void start() throws IllegalStateException {
 
-		Log.e(Constants.LOG_TAG, "KSYMediaPlayer start()");
+		Log.d(Constants.LOG_TAG, "KSYMediaPlayer start()");
 		stayAwake(true);
 		start = System.currentTimeMillis();
 		
 		logRecord.setFirstFrameTime(start - prepare);
-		Log.e(Constants.LOG_TAG, logRecord.getFirstFrameTimeJson());
+		Log.d(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
 		
 		try {
 			logClient.put(logRecord.getFirstFrameTimeJson());
 		} catch (Ks3ClientException e) {
 			e.printStackTrace();
+			Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() e=" + e);
 		}
 		
 		_start();
@@ -375,7 +381,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
     	
     	logRecord.setSeekBegin(System.currentTimeMillis());
     	
-    	Log.e(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
+    	Log.d(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
     	
     	try {
 			logClient.put(logRecord.getSeekBeginJson());

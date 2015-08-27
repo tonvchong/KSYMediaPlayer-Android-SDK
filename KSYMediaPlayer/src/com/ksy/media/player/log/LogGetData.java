@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -224,14 +225,18 @@ public class LogGetData {
 	/**
 	 * get current time GMT
 	 */
-	public static String currentTimeGmt() {
+	public static long currentTimeGmt() {
 		
-		Calendar cd = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat(
-				"EEE d MMM yyyy HH:mm:ss 'GMT'");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // set GMT
-
-		return sdf.format(cd.getTime());
+//		Calendar cd = Calendar.getInstance();
+//		SimpleDateFormat sdf = new SimpleDateFormat(
+//				"EEE d MMM yyyy HH:mm:ss 'GMT'");
+//		sdf.setTimeZone(TimeZone.getTimeZone("GMT")); // set GMT
+//
+//		return sdf.format(cd.getTime());
+		
+		 Date date = new Date();
+		 
+		 return date.getTime();
 	}
 
 	/**

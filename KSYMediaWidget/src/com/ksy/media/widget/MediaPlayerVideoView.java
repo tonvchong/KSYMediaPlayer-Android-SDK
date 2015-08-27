@@ -263,7 +263,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 			mMediaInfo = null;
 			KSYMediaPlayer ksyMediaPlayer = null;
 			if (mUri != null) {
-				ksyMediaPlayer = new KSYMediaPlayer(mContext);
+				ksyMediaPlayer = new KSYMediaPlayer(mContext, 5000);
 				ksyMediaPlayer.setAvOption(AvFormatOption_HttpDetectRangeSupport.Disable);
 				ksyMediaPlayer.setOverlayFormat(AvFourCC.SDL_FCC_RV32);
 				ksyMediaPlayer.setAvCodecOption("skip_loop_filter", "48");
@@ -651,7 +651,6 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 	@Override
 	public void seekTo(long msec) {
 
-		Log.e(Constants.LOG_TAG, "seek called=========");
 		if (isInPlaybackState())
 			mMediaPlayer.seeksTo(msec);
 	}
