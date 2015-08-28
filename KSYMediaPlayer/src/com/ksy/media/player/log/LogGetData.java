@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -37,8 +37,7 @@ public class LogGetData {
 	private static ActivityManager mActivityManager;
 	
 	private LogGetData() {
-		
-	};
+	}
 
 	private LogGetData(Context context) {
 		tm = (TelephonyManager) context.getSystemService("phone");
@@ -103,13 +102,32 @@ public class LogGetData {
 	 * get cpu info
 	 */
 	public static String getCpuInfo() {
-		String cup = getMaxCpu();
+		String cpuInfo = null;
+		String cpu = getMaxCpu();
 		String cpuCore = String.valueOf(Runtime.getRuntime().availableProcessors());
-		cup = cpuCore + "*" + cup;
 		
-		return cup;
+		double dot = Double.parseDouble(cpu) / 1000000;
+		double cdot = getDecimal(dot);
+		String converCpu = String.valueOf(cdot);
+		
+		cpuInfo = cpuCore + "*" + converCpu;
+		
+		return cpuInfo;
+	}
+	
+	//四舍五入
+	public static double getDecimal(double num) {
+	   if (Double.isNaN(num)) {
+	     return 0;
+	   }
+	   
+	   BigDecimal bd = new BigDecimal(num);
+	   num = bd.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+	   
+	   return num;
 	}
 
+	
 	public static String getMaxCpu() {
 		String result = "";
 		ProcessBuilder cmd;
@@ -257,7 +275,7 @@ public class LogGetData {
 	}
 
 	/**
-	 * get cpu usage
+	 * get cpu usage TODO
 	 */
 	public static String getCpuUsage(String pack) {
 		String cpuUsage = null;

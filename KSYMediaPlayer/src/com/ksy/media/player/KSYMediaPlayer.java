@@ -1,7 +1,6 @@
 package com.ksy.media.player;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
@@ -11,10 +10,7 @@ import java.util.TreeMap;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
-import android.graphics.SurfaceTexture;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.os.Build;
@@ -33,7 +29,6 @@ import com.ksy.media.player.annotations.AccessedByNative;
 import com.ksy.media.player.annotations.CalledByNative;
 import com.ksy.media.player.exception.Ks3ClientException;
 import com.ksy.media.player.log.LogClient;
-import com.ksy.media.player.log.LogRecord;
 import com.ksy.media.player.option.AvFormatOption;
 import com.ksy.media.player.pragma.DebugLog;
 import com.ksy.media.player.util.Constants;
@@ -240,8 +235,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		}
 	}
 
-	public native void _prepareAsync() throws IllegalStateException;
-
 	//TODO
 	@Override
 	public void start() throws IllegalStateException {
@@ -263,25 +256,28 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		_start();
 	}
 
-	private native void _start() throws IllegalStateException;
-
-	@Override
-	public void stop() throws IllegalStateException {
-
-		stayAwake(false);
-		_stop();
-	}
-
-	private native void _stop() throws IllegalStateException;
-
 	@Override
 	public void pause() throws IllegalStateException {
 
 		stayAwake(false);
 		_pause();
 	}
+	
+	@Override
+	public void stop() throws IllegalStateException {
 
+		stayAwake(false);
+		
+		logClient.stop();
+		_stop();
+		
+	}
+
+	public native void _prepareAsync() throws IllegalStateException;
+	private native void _start() throws IllegalStateException;
 	private native void _pause() throws IllegalStateException;
+	private native void _stop() throws IllegalStateException;
+	
 
 	@SuppressLint("Wakelock")
 	@Override
@@ -401,8 +397,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		_release();
 	}
 
-	private native void _release();
-
 	@Override
 	public void reset() {
 
@@ -415,6 +409,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		mVideoHeight = 0;
 	}
 
+	private native void _release();
 	private native void _reset();
 
 	@Override

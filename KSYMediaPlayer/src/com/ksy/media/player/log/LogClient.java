@@ -28,7 +28,7 @@ import com.ksy.media.player.exception.Ks3ClientException;
 import com.ksy.media.player.util.Constants;
 import com.ksy.media.player.util.GzipUtil;
 import com.ksy.media.player.util.NetworkUtil;
-import com.loopj.android.http.SyncHttpClient;
+
 
 public class LogClient {
 	private static final int LOG_ONCE_LIMIT = 120;
@@ -36,7 +36,6 @@ public class LogClient {
 //	private static final long SAVE_TIME_INTERVAL = 10 * 1000; //用户可选
 	private static LogClient mInstance;
 	private static Object mLockObject = new Object();
-//	private static SyncHttpClient syncClient;
 	private static Context mContext;
 	private volatile boolean mStarted = false;
 	private volatile boolean mSaveStarted = false;
@@ -50,7 +49,7 @@ public class LogClient {
 	private static String pack = null;
 	
 	private LogClient() {
-	};
+	}
 
 	private LogClient(Context context) {
 	}
@@ -60,7 +59,6 @@ public class LogClient {
 			synchronized (mLockObject) {
 				if (null == mInstance) {
 					mInstance = new LogClient();
-//					syncClient = new SyncHttpClient();
 					logGetData = LogGetData.getInstance();
 				}
 			}
@@ -90,7 +88,6 @@ public class LogClient {
 		
 	    try {    
 	        info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);    
-	 
 	        packageName = info.packageName;
 	        
 	    } catch (NameNotFoundException e) {    
@@ -107,9 +104,9 @@ public class LogClient {
 		
 		logRecord.setCpu(logGetData.getCpuInfo());
 		logRecord.setCore(logGetData.getCoreVersion());
-		logRecord.setCpuUsage(logGetData.getCpuUsage(pack));
+//		logRecord.setCpuUsage(logGetData.getCpuUsage(pack));
 		logRecord.setMemory(logGetData.getMemory());
-		logRecord.setMemoryUsage(logGetData.getMemoryUsage());
+//		logRecord.setMemoryUsage(logGetData.getMemoryUsage());
 		logRecord.setDate(logGetData.currentTimeGmt());//
 		logRecord.setDevice(logGetData.getImei());
 		logRecord.setGmt(logGetData.getGmt());//
@@ -264,7 +261,7 @@ public class LogClient {
 		return array.toString();
 	}
 
-	//TODO
+
 	public void saveUsageData(int time) {
 		if (mSaveStarted) {
 			return;
@@ -276,8 +273,13 @@ public class LogClient {
 			@Override
 			public void run() {
 				try {
+					
+					logRecord.setCpuUsage(logGetData.getCpuUsage(pack));
+					logRecord.setMemoryUsage(logGetData.getMemoryUsage());
+					
 					Log.d(Constants.LOG_TAG, "logRecord.getCapabilityJson() =" + logRecord.getCapabilityJson());
 					mInstance.put(logRecord.getCapabilityJson());
+					
 				} catch (Ks3ClientException e) {
 					e.printStackTrace();
 					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
@@ -338,7 +340,8 @@ public class LogClient {
 		}
 	}
 
-	private void stop() {
+	
+	public void stop() {
 		if (!mStarted) {
 			return;
 		}

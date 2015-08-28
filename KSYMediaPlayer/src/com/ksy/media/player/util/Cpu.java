@@ -3,8 +3,6 @@ package com.ksy.media.player.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.util.Log;
 
@@ -74,28 +72,29 @@ public class Cpu {
 					}
 				}
 			} else {
+				//TODO
 				Log.d(Constants.LOG_TAG, "m_Package is  null ");
 			}
 			
 		} catch (IOException exp) {
-
+			Log.e(Constants.LOG_TAG, "exp 11 = " + exp);
 		} finally {
 			// * we need to close the stream once everything is done.
 			try {
 				if (ifp != null)
 					ifp.close();
 			} catch (IOException exp) {
-
+				Log.e(Constants.LOG_TAG, "exp 22 = " + exp);
 			}
 		}
 	}
 
 	public void parseTopResults() {
-		String sUserCpuUsage = null;
-		String sSystemCpuUsage = null;
-
-		Pattern xRegexSearchPattern = null;
-		Matcher xSearch = null;
+//		String sUserCpuUsage = null;
+//		String sSystemCpuUsage = null;
+//
+//		Pattern xRegexSearchPattern = null;
+//		Matcher xSearch = null;
 
 		getCPUInfo();
 
