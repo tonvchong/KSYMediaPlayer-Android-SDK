@@ -26,8 +26,8 @@ public class LogRecord {
 	private String memoryUsage;
 	private long firstFrameTime;
 	private int cacheBufferSize;
-	private long seekBegin;
-	private long seekEnd;
+//	private long seekBegin;
+//	private long seekEnd;
 	private String seekStatus;
 	private String seekMessage;
 	private String playStatus;
@@ -176,7 +176,7 @@ public class LogRecord {
 		this.cacheBufferSize = cacheBufferSize;
 	}
 
-	public long getSeekBegin() {
+	/*public long getSeekBegin() {
 		return seekBegin;
 	}
 
@@ -190,7 +190,7 @@ public class LogRecord {
 
 	public void setSeekEnd(long seekEnd) {
 		this.seekEnd = seekEnd;
-	}
+	}*/
 
 	public String getSeekStatus() {
 		return seekStatus;
@@ -347,6 +347,28 @@ public class LogRecord {
 		return obj.toString();
 	}
 	
+	public String getBaseDataEndJson() {
+      JSONObject obj = new JSONObject();
+        
+	    try {
+			obj.put("_id", getUuid());
+			obj.put("date", getDate()); //TODO
+		    obj.put("type", "103");
+		    obj.put("cpu", getCpu());
+		    obj.put("memory", getMemory());
+		    obj.put("core", getCore());
+		    obj.put("device", getDevice());
+		    obj.put("system", getSystem());
+		    obj.put("userAgent", getUserAgent());
+		    obj.put("gmt", getGmt());
+		    
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	    
+		return obj.toString();
+	}
+	
 	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"102\",\"playStatus\":\"playStatus\",\"gmt\":\"gmt\"}"
 	public String getPlayStatusJson() {
        JSONObject obj = new JSONObject();
@@ -372,7 +394,7 @@ public class LogRecord {
 	    try {
 			obj.put("_id", getUuid());
 			obj.put("date", getDate());
-		    obj.put("type", "103");
+		    obj.put("type", "102");
 		    obj.put("firstFrameTime", getFirstFrameTime());
 		    obj.put("cacheBufferSize", getCacheBufferSize()); //String.valueOf(getCacheBufferSize())
 		    obj.put("playMetaData", getPlayMetaData());
@@ -417,7 +439,9 @@ public class LogRecord {
 			obj.put("date", getDate());
 			obj.put("type", "200");
 			obj.put("field", "usage");
-			obj.put("deviceUsage", getCurrentUsage());
+//			obj.put("deviceUsage", getCurrentUsage());
+			obj.put("cpuUsage", getCpuUsage());
+			obj.put("memoryUsage", getMemoryUsage());
 			obj.put("gmt", getGmt());
 			    
 		} catch (JSONException e) {
@@ -427,7 +451,7 @@ public class LogRecord {
 		return obj.toString();
 	}
 	
-	private Object getCurrentUsage() {
+	/*private Object getCurrentUsage() {
         JSONObject obj = new JSONObject();
         
 	    try {
@@ -439,7 +463,7 @@ public class LogRecord {
 		}
 	    
 		return obj;
-	}
+	}*/
 	
 	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"201\",\"field\":\"seekbegin\",\"seekBegin\":\"seekBegin\",\"gmt\":\"gmt\"}"
 	public String getSeekBeginJson() {
@@ -449,8 +473,8 @@ public class LogRecord {
 			obj.put("_id", getUuid());
 			obj.put("date", getDate());
 		    obj.put("type", "201");
-		    obj.put("field", "seekbegin");
-		    obj.put("seekBegin", getSeekBegin()); //String.valueOf(getSeekBegin())
+		    obj.put("field", "seek");
+//		    obj.put("seekBegin", getSeekBegin()); //String.valueOf(getSeekBegin())
 		    obj.put("gmt", getGmt());
 		    
 		} catch (JSONException e) {
@@ -467,9 +491,11 @@ public class LogRecord {
 	    try {
 			obj.put("_id", getUuid());
 			obj.put("date", getDate());
-		    obj.put("type", "202");
-		    obj.put("field", "seekend");
-		    obj.put("seekEnd", getSeekEnd());
+		    obj.put("type", "203");
+		    obj.put("field", "seek");
+		    obj.put("Status", getSeekStatus());
+		    obj.put("Message", getSeekMessage());
+//		    obj.put("seekEnd", getSeekEnd());
 		    obj.put("gmt", getGmt());
 		    
 		} catch (JSONException e) {
@@ -480,7 +506,7 @@ public class LogRecord {
 	}
 	
 	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"200\",\"field\":\"seekrecord\",\"seekStatus\":\"seekStatus\",\"gmt\":\"gmt\"}"
-	public String getSeekStateJson() {
+	/*public String getSeekStateJson() {
         JSONObject obj = new JSONObject();
         
 	    try {
@@ -496,10 +522,10 @@ public class LogRecord {
 		}
 	    
 		return obj.toString();
-	}
+	}*/
 
 	//"{\"_id\":\"uuid\",\"date\":\"date\",\"type\":\"200\",\"field\":\"seekdetail\",\"seekMessage\":\"seekMessage\",\"gmt\":\"gmt\"}"
-	public String getSeekDetailJson() {
+	/*public String getSeekDetailJson() {
         JSONObject obj = new JSONObject();
         
 	    try {
@@ -515,7 +541,7 @@ public class LogRecord {
 		}
 	    
 		return obj.toString();
-	}
+	}*/
 	
 	
 }

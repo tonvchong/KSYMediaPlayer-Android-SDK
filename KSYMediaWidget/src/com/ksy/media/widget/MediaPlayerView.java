@@ -1429,7 +1429,6 @@ public class MediaPlayerView extends RelativeLayout {
 				fileOutputStream.close();
 			} catch (IOException e) {
 				e.printStackTrace();
-
 			}
 		} else {
 			Log.d(Constants.LOG_TAG, "too frequently screen shot");

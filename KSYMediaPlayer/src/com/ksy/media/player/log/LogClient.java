@@ -32,7 +32,7 @@ import com.ksy.media.player.util.NetworkUtil;
 
 public class LogClient {
 	private static final int LOG_ONCE_LIMIT = 120;
-	private static final long TIMER_INTERVAL = 60 * 60 * 1000; //2 * 1000;
+	private static final long TIMER_INTERVAL = 5 * 1000; //60 * 60 * 1000;
 //	private static final long SAVE_TIME_INTERVAL = 10 * 1000; //用户可选
 	private static LogClient mInstance;
 	private static Object mLockObject = new Object();
@@ -104,9 +104,7 @@ public class LogClient {
 		
 		logRecord.setCpu(logGetData.getCpuInfo());
 		logRecord.setCore(logGetData.getCoreVersion());
-//		logRecord.setCpuUsage(logGetData.getCpuUsage(pack));
 		logRecord.setMemory(logGetData.getMemory());
-//		logRecord.setMemoryUsage(logGetData.getMemoryUsage());
 		logRecord.setDate(logGetData.currentTimeGmt());//
 		logRecord.setDevice(logGetData.getImei());
 		logRecord.setGmt(logGetData.getGmt());//
@@ -178,9 +176,10 @@ public class LogClient {
 			try {
 				//第三步：执行请求对象，获取服务器发还的相应对象
 				HttpResponse response = httpClient.execute(httpPost);
-				String result = convertStreamToString(response.getEntity().getContent());
 				
+				String result = convertStreamToString(response.getEntity().getContent());
 				Log.d(Constants.LOG_TAG, "result = " + result);
+				
 				//第四步：检查相应的状态是否正常：检查状态码的值是200表示正常
 				if (response.getStatusLine().getStatusCode() == 200) {
 					

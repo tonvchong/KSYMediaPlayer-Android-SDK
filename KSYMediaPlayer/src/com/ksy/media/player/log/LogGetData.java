@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -254,7 +255,13 @@ public class LogGetData {
 		
 		 Date date = new Date();
 		 
+		 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); //yyyy-MM-dd hh:mm:ss
+	        
 		 return date.getTime();
+		 
+//		 return Long.parseLong(df.format(date));
+		 
+//		 return df.format(date);
 	}
 
 	/**

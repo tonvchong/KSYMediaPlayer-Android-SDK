@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -81,6 +83,10 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	private LogClient logClient;
 	private int mGetUsageTime;
 	
+	private Timer baseTimer;
+	private Timer firstTimer;
+	private Timer seekbeginTimer;
+	
 	private static KSYLibLoader sLocalLibLoader = new KSYLibLoader() {
 
 		@Override
@@ -127,6 +133,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		this(sLocalLibLoader);
 		mContext = context;
 		
+		//多久获取一次实时数据
 		mGetUsageTime = time;
 		
 		logClient = LogClient.getInstance(context.getApplicationContext());
@@ -214,7 +221,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		
         logClient.saveUsageData(mGetUsageTime);
 		
-		try {
+		/*try {
 			Log.d(Constants.LOG_TAG, "BaseData = " + logRecord.getBaseDataJson());
 			Log.d(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
 			Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
@@ -226,7 +233,35 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			e.printStackTrace();
 			Log.e(Constants.LOG_TAG, " KSYMediaPlayer  e=" + e);
 		}
-		
+		*/
+        
+        Log.d(Constants.LOG_TAG, "BaseData = " + logRecord.getBaseDataJson());
+        
+        try {
+			logClient.put(logRecord.getBaseDataJson());
+		} catch (Ks3ClientException e1) {
+			e1.printStackTrace();
+		}
+        
+        
+        baseTimer = new Timer();
+        baseTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					
+					Log.d(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
+					Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
+					
+					logClient.put(logRecord.getPlayStatusJson());
+					logClient.put(logRecord.getNetStateJson());
+					
+				} catch (Ks3ClientException e) {
+					e.printStackTrace();
+					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
+				}
+			}
+		}, 3000, 4000);
 		
 		if (TextUtils.isEmpty(mFFConcatContent)) {
 			_prepareAsync();
@@ -241,18 +276,37 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 		Log.d(Constants.LOG_TAG, "KSYMediaPlayer start()");
 		stayAwake(true);
+		
+		//获取playmete
+		getMediaInfo();
+		
 		start = System.currentTimeMillis();
 		
-		logRecord.setFirstFrameTime(start - prepare);
-		Log.d(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
+		/*logRecord.setFirstFrameTime(start - prepare);
+		Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
 		
 		try {
 			logClient.put(logRecord.getFirstFrameTimeJson());
 		} catch (Ks3ClientException e) {
 			e.printStackTrace();
 			Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() e=" + e);
-		}
+		}*/
 		
+		firstTimer = new Timer();
+		firstTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
+					logClient.put(logRecord.getFirstFrameTimeJson());
+					
+				} catch (Ks3ClientException e) {
+					e.printStackTrace();
+					Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
+				}
+			}
+		}, 3000, 4000);
+        
 		_start();
 	}
 
@@ -269,6 +323,14 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		stayAwake(false);
 		
 		logClient.stop();
+		
+		try {
+			logClient.put(logRecord.getBaseDataEndJson());
+		} catch (Ks3ClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		_stop();
 		
 	}
@@ -375,16 +437,33 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
     @Override
     public void seeksTo(long msec) {
     	
-    	logRecord.setSeekBegin(System.currentTimeMillis());
+    	//不需要计算时间了
+//    	logRecord.setSeekBegin(System.currentTimeMillis());
     	
-    	Log.d(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
+    	/*Log.d(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
     	
     	try {
 			logClient.put(logRecord.getSeekBeginJson());
 		} catch (Ks3ClientException e) {
 			e.printStackTrace();
-		}
+		}*/
     	
+    	
+    	seekbeginTimer = new Timer();
+    	seekbeginTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					Log.d(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
+					logClient.put(logRecord.getSeekBeginJson());
+					
+				} catch (Ks3ClientException e) {
+					e.printStackTrace();
+					Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
+				}
+			}
+		}, 3000, 4000);
+		
     	seekTo(msec);
     }
 	
@@ -446,11 +525,13 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		}
 
 		try {
-			//TODO
+			//TODO 直播点播、协议、格式、编码记录
 			mediaInfo.mMeta = KSYMediaMeta.parse(_getMediaMeta());
+			
 			String format = mediaInfo.mMeta.mFormat;
 			String codec = IjkStreamMeta.getCodecLongNameInline();
 			
+			Log.e(Constants.LOG_TAG,"format =" + format + "<>>codec=" + codec);
 			playMetaData = format + "_" + codec;
 			logRecord.setPlayMetaData(playMetaData);
 			
@@ -627,6 +708,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 			case MEDIA_ERROR:
 
+				//TODO
 				Log.e(Constants.LOG_TAG, "Error (" + msg.arg1 + "," + msg.arg2 + ")");
 				if (!player.notifyOnError(msg.arg1, msg.arg2)) {
 					player.notifyOnCompletion();
@@ -1079,7 +1161,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			return true;
 		}
 
-		Log.e(Constants.LOG_TAG, "the cached forder clear success , recreate cached forder success");//TODO
+		Log.e(Constants.LOG_TAG, "the cached forder clear success , recreate cached forder success");
 		return true;
 	}
 

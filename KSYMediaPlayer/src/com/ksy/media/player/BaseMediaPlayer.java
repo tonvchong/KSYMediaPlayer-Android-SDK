@@ -1,5 +1,8 @@
 package com.ksy.media.player;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.util.Log;
 
 import com.ksy.media.player.exception.Ks3ClientException;
@@ -22,6 +25,8 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
     private OnDRMRequiredListener mOnDRMRequiredListener;
     
     public LogRecord logRecord = LogRecord.getInstance();
+    private Timer seekTimer;
+    
     
     public final void setOnPreparedListener(OnPreparedListener listener) {
         mOnPreparedListener = listener;
@@ -100,18 +105,29 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
         if (mOnSeekCompleteListener != null)
             mOnSeekCompleteListener.onSeekComplete(this);
         
-        logRecord.setSeekEnd(System.currentTimeMillis());
+        //不需要这个了，合并seekstatus和seekMessage
+//        logRecord.setSeekEnd(System.currentTimeMillis());
         logRecord.setSeekStatus("ok");
         logRecord.setSeekMessage("SeekComplete"); //TODO 需要底层对接
         
         Log.d(Constants.LOG_TAG, "seekend =" + logRecord.getSeekEndJson());
-        Log.d(Constants.LOG_TAG, "seekMessage =" + logRecord.getSeekDetailJson());
-        Log.d(Constants.LOG_TAG, "seekStatus =" + logRecord.getSeekStateJson());
         
+        seekTimer = new Timer();
+        seekTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					LogClient.getInstance().put(logRecord.getSeekEndJson());
+					
+				} catch (Ks3ClientException e) {
+					e.printStackTrace();
+					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
+				}
+			}
+		}, 3000, 4000);
+    
         try {
 			LogClient.getInstance().put(logRecord.getSeekEndJson());
-			LogClient.getInstance().put(logRecord.getSeekDetailJson());
-			LogClient.getInstance().put(logRecord.getSeekStateJson());
 		} catch (Ks3ClientException e) {
 			e.printStackTrace();
 			Log.e(Constants.LOG_TAG, "BaseMediaPlayer e =" + e);
@@ -133,6 +149,7 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
         logRecord.setSeekStatus("fail");
         
         String playFail = String.valueOf(what) + "_" + String.valueOf(extra);
+        //都返回错误码就行
         logRecord.setPlayStatus(playFail);
         
         logRecord.setSeekMessage(playFail);

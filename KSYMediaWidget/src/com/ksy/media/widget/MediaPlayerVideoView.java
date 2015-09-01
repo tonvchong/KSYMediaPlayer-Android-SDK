@@ -625,6 +625,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 		return (int) mDuration;
 	}
 
+	//TODO
 	public MediaInfo getMediaInfo() {
 
 		if (isInPlaybackState()) {

@@ -163,9 +163,9 @@ public class DBManager {
 									.getColumnIndex(DBConstant.TABLE_LOG_COLUMN_CONTENT));
 //					Log.d(Constants.LOG_TAG, "logId=" + logId + ">>>>><<logContent=" + logContent);
 					recordResults.idBuffer.append(logId);
-					recordResults.idBuffer.append("/n");
+					recordResults.idBuffer.append("\r\n");
 					recordResults.contentBuffer.append(logContent);
-					recordResults.contentBuffer.append("/n");
+					recordResults.contentBuffer.append("\r\n"); // /n
 				}
 				cursor.close();
 			}
@@ -177,7 +177,7 @@ public class DBManager {
 
 	@SuppressLint("NewApi")
 	public void deleteLogs(String recordsId) {
-		String[] ids = recordsId.split("/n");
+		String[] ids = recordsId.split("\r\n"); ///n
 		synchronized (mLockObject) {
 			if (Build.VERSION.SDK_INT >= 11) {
 				mDatabase.beginTransaction();
