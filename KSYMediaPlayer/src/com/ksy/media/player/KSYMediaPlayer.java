@@ -80,7 +80,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	long start;
 	String playMetaData = null;
 	private Context mContext;
-	private LogClient logClient;
 	private int mGetUsageTime;
 	
 	private Timer baseTimer;
@@ -129,9 +128,11 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	}
 
 	//TODO
-	public KSYMediaPlayer(Context context, int time) {
+	public KSYMediaPlayer(Context context, int time, boolean b) {
 		this(sLocalLibLoader);
 		mContext = context;
+		
+		logClient.mSwitch = b;
 		
 		//多久获取一次实时数据
 		mGetUsageTime = time;
@@ -218,50 +219,49 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	@Override
 	public void prepareAsync() throws IllegalStateException {
 		prepare = System.currentTimeMillis();
-		
-        logClient.saveUsageData(mGetUsageTime);
-		
-		/*try {
-			Log.d(Constants.LOG_TAG, "BaseData = " + logRecord.getBaseDataJson());
-			Log.d(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
-			Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
-			logClient.put(logRecord.getBaseDataJson());
-			logClient.put(logRecord.getPlayStatusJson());
-			logClient.put(logRecord.getNetStateJson());
-			
-		} catch (Ks3ClientException e) {
-			e.printStackTrace();
-			Log.e(Constants.LOG_TAG, " KSYMediaPlayer  e=" + e);
-		}
-		*/
         
-        Log.d(Constants.LOG_TAG, "BaseData = " + logRecord.getBaseDataJson());
-        
-        try {
-			logClient.put(logRecord.getBaseDataJson());
-		} catch (Ks3ClientException e1) {
-			e1.printStackTrace();
-		}
-        
-        
-        baseTimer = new Timer();
-        baseTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					
-					Log.d(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
-					Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
-					
-					logClient.put(logRecord.getPlayStatusJson());
-					logClient.put(logRecord.getNetStateJson());
-					
-				} catch (Ks3ClientException e) {
-					e.printStackTrace();
-					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
-				}
+		Log.d(Constants.LOG_TAG, "logClient.mSwitch 11 =" + logClient.mSwitch);
+        if (logClient.mSwitch) {
+        	logClient.saveUsageData(mGetUsageTime);
+            try {
+            	Log.d(Constants.LOG_TAG, "BaseData = " + logRecord.getBaseDataJson());
+    			logClient.put(logRecord.getBaseDataJson());
+    		} catch (Ks3ClientException e1) {
+    			e1.printStackTrace();
+    		}
+            
+            
+            /*baseTimer = new Timer();
+            baseTimer.schedule(new TimerTask() {
+    			@Override
+    			public void run() {
+    				try {
+    					Log.d(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
+    					Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
+    					logClient.put(logRecord.getPlayStatusJson());
+    					logClient.put(logRecord.getNetStateJson());
+    					
+    				} catch (Ks3ClientException e) {
+    					e.printStackTrace();
+    					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
+    				}
+    			}
+    		}, 3000, 4000);*/
+            
+            
+            try {
+				Log.d(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
+				Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
+				logClient.put(logRecord.getPlayStatusJson());
+				logClient.put(logRecord.getNetStateJson());
+				
+			} catch (Ks3ClientException e) {
+				e.printStackTrace();
+				Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
 			}
-		}, 3000, 4000);
+            
+        }
+		
 		
 		if (TextUtils.isEmpty(mFFConcatContent)) {
 			_prepareAsync();
@@ -282,30 +282,38 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		
 		start = System.currentTimeMillis();
 		
-		/*logRecord.setFirstFrameTime(start - prepare);
-		Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
+		logRecord.setFirstFrameTime(start - prepare);
 		
-		try {
-			logClient.put(logRecord.getFirstFrameTimeJson());
-		} catch (Ks3ClientException e) {
-			e.printStackTrace();
-			Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() e=" + e);
-		}*/
 		
-		firstTimer = new Timer();
-		firstTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
-					logClient.put(logRecord.getFirstFrameTimeJson());
-					
-				} catch (Ks3ClientException e) {
-					e.printStackTrace();
-					Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
+		Log.d(Constants.LOG_TAG, "logClient.mSwitch 22 =" + logClient.mSwitch);
+		if (logClient.mSwitch) {
+			/*firstTimer = new Timer();
+			firstTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					try {
+						Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
+						logClient.put(logRecord.getFirstFrameTimeJson());
+						
+					} catch (Ks3ClientException e) {
+						e.printStackTrace();
+						Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
+					}
 				}
+			}, 3000, 4000);*/
+			
+			
+			try {
+				Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
+				logClient.put(logRecord.getFirstFrameTimeJson());
+				
+			} catch (Ks3ClientException e) {
+				e.printStackTrace();
+				Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
 			}
-		}, 3000, 4000);
+			
+		}
+		
         
 		_start();
 	}
@@ -322,14 +330,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 		stayAwake(false);
 		
-		logClient.stop();
 		
-		try {
-			logClient.put(logRecord.getBaseDataEndJson());
-		} catch (Ks3ClientException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		_stop();
 		
@@ -440,29 +441,36 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
     	//不需要计算时间了
 //    	logRecord.setSeekBegin(System.currentTimeMillis());
     	
-    	/*Log.d(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
+    
     	
-    	try {
-			logClient.put(logRecord.getSeekBeginJson());
-		} catch (Ks3ClientException e) {
-			e.printStackTrace();
-		}*/
-    	
-    	
-    	seekbeginTimer = new Timer();
-    	seekbeginTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					Log.d(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
-					logClient.put(logRecord.getSeekBeginJson());
-					
-				} catch (Ks3ClientException e) {
-					e.printStackTrace();
-					Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
-				}
+    	Log.d(Constants.LOG_TAG, "logClient.mSwitch 44 =" + logClient.mSwitch);
+    	if (logClient.mSwitch) {
+    		/*seekbeginTimer = new Timer();
+        	seekbeginTimer.schedule(new TimerTask() {
+    			@Override
+    			public void run() {
+    				try {
+    					Log.d(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
+    					logClient.put(logRecord.getSeekBeginJson());
+    					
+    				} catch (Ks3ClientException e) {
+    					e.printStackTrace();
+    					Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
+    				}
+    			}
+    		}, 3000, 4000);*/
+        	
+    		
+        	try {
+				Log.d(Constants.LOG_TAG, "seekBegins =" + logRecord.getSeekBeginJson());
+				logClient.put(logRecord.getSeekBeginJson());
+				
+			} catch (Ks3ClientException e) {
+				e.printStackTrace();
+				Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
 			}
-		}, 3000, 4000);
+    	}
+    	
 		
     	seekTo(msec);
     }
@@ -473,6 +481,19 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		stayAwake(false);
 		updateSurfaceScreenOn();
 		resetListeners();
+		
+		Log.d(Constants.LOG_TAG, "logClient.mSwitch 33 =" + logClient.mSwitch);
+		if (logClient.mSwitch) {
+			logClient.stop();
+			Log.d(Constants.LOG_TAG, "stop() ......................" );
+			try {
+				logClient.put(logRecord.getBaseDataEndJson());
+			} catch (Ks3ClientException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		_release();
 	}
 

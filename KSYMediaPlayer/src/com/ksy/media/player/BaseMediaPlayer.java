@@ -26,7 +26,7 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
     
     public LogRecord logRecord = LogRecord.getInstance();
     private Timer seekTimer;
-    
+    public LogClient logClient;
     
     public final void setOnPreparedListener(OnPreparedListener listener) {
         mOnPreparedListener = listener;
@@ -110,28 +110,41 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
         logRecord.setSeekStatus("ok");
         logRecord.setSeekMessage("SeekComplete"); //TODO 需要底层对接
         
-        Log.d(Constants.LOG_TAG, "seekend =" + logRecord.getSeekEndJson());
-        
-        seekTimer = new Timer();
-        seekTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					LogClient.getInstance().put(logRecord.getSeekEndJson());
-					
-				} catch (Ks3ClientException e) {
-					e.printStackTrace();
-					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
-				}
+        Log.d(Constants.LOG_TAG, "logClient.mSwitch 55 =" + logClient.mSwitch);
+        if (logClient.mSwitch) {
+        	/*seekTimer = new Timer();
+            seekTimer.schedule(new TimerTask() {
+    			@Override
+    			public void run() {
+    				try {
+    					Log.d(Constants.LOG_TAG, "seekend =" + logRecord.getSeekEndJson());
+    					LogClient.getInstance().put(logRecord.getSeekEndJson());
+    					
+    				} catch (Ks3ClientException e) {
+    					e.printStackTrace();
+    					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
+    				}
+    			}
+    		}, 3000, 4000);*/
+            
+            
+            try {
+				Log.d(Constants.LOG_TAG, "seekend =" + logRecord.getSeekEndJson());
+				LogClient.getInstance().put(logRecord.getSeekEndJson());
+				
+			} catch (Ks3ClientException e) {
+				e.printStackTrace();
+				Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
 			}
-		}, 3000, 4000);
+        }
+        
     
-        try {
+        /*try {
 			LogClient.getInstance().put(logRecord.getSeekEndJson());
 		} catch (Ks3ClientException e) {
 			e.printStackTrace();
 			Log.e(Constants.LOG_TAG, "BaseMediaPlayer e =" + e);
-		}
+		}*/
         
     }
 

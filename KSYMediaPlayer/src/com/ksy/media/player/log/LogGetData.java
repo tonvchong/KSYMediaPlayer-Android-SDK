@@ -256,10 +256,8 @@ public class LogGetData {
 		 Date date = new Date();
 		 
 		 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); //yyyy-MM-dd hh:mm:ss
-	        
+	     Log.d("lixp", "date.gettime=" + date.getTime());
 		 return date.getTime();
-		 
-//		 return Long.parseLong(df.format(date));
 		 
 //		 return df.format(date);
 	}

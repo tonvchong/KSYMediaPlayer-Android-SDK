@@ -33,6 +33,25 @@ public class LogRecord {
 	private String playStatus;
 	private String playMetaData; //TODO
 	
+	private String companyTag;
+	private String businessTag;
+	
+
+	public String getCompanyTag() {
+		return companyTag;
+	}
+
+	public void setCompanyTag(String companyTag) {
+		this.companyTag = companyTag;
+	}
+
+	public String getBusinessTag() {
+		return businessTag;
+	}
+
+	public void setBusinessTag(String businessTag) {
+		this.businessTag = businessTag;
+	}
 
 	private static LogRecord mInstance;
 	private static Object mLockObject = new Object();

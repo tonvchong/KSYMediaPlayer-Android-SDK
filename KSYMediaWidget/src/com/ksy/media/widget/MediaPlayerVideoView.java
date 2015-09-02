@@ -263,7 +263,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 			mMediaInfo = null;
 			KSYMediaPlayer ksyMediaPlayer = null;
 			if (mUri != null) {
-				ksyMediaPlayer = new KSYMediaPlayer(mContext, 5000);
+				ksyMediaPlayer = new KSYMediaPlayer(mContext, 500000, true);//true为开启日志
 				ksyMediaPlayer.setAvOption(AvFormatOption_HttpDetectRangeSupport.Disable);
 				ksyMediaPlayer.setOverlayFormat(AvFourCC.SDL_FCC_RV32);
 				ksyMediaPlayer.setAvCodecOption("skip_loop_filter", "48");
@@ -517,6 +517,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 				release(true);
 			if (mOnSurfaceListener != null)
 				mOnSurfaceListener.surfaceDestroyed(holder);
+			
 		}
 	};
 

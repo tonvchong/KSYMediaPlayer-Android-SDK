@@ -6,14 +6,13 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-import com.ksy.media.player.log.LogClient;
-import com.ksy.media.player.log.LogGetData;
 import com.ksy.media.player.util.Constants;
 import com.ksy.media.widget.MediaPlayerView;
 
@@ -22,8 +21,6 @@ public class VideoPlayerActivity extends Activity implements
 
 	MediaPlayerView playerView;
 	
-	LogClient logClient = null;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -102,6 +99,7 @@ public class VideoPlayerActivity extends Activity implements
 		File file = new File(Environment.getExternalStorageDirectory(),
 				"Love.mp4");
 		String path = file.getAbsolutePath();
+		
 		// Love.mp4 
 		// avitest.avi
 		// flvtest.flv
@@ -140,7 +138,7 @@ public class VideoPlayerActivity extends Activity implements
 
 		Log.i(Constants.LOG_TAG, "activity on finish ===========");
 		// this.onBackPressed();
-//		this.finish();
+		this.finish();
 	}
 
 	@Override
@@ -150,4 +148,21 @@ public class VideoPlayerActivity extends Activity implements
 
 	}
 
+	/**
+	 * 返回键退出
+	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+//			playerView.onDestroy();
+			finish();
+			Log.i(Constants.LOG_TAG, "onKeyDown ===========");
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
 }
+
+

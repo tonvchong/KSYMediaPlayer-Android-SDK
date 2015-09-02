@@ -47,6 +47,7 @@ public class LogClient {
 	public static LogGetData logGetData;
 	private LogRecord logRecord = LogRecord.getInstance();
 	private static String pack = null;
+	public static boolean mSwitch = false; //开关
 	
 	private LogClient() {
 	}
@@ -245,7 +246,7 @@ public class LogClient {
 	}  
 	 
 	//TODO
-	private String makeJsonLog(String recordsJson) {
+	/*private String makeJsonLog(String recordsJson) {
 		JSONArray array = new JSONArray();
 		String[] singlgLogJson = recordsJson.split("/n"); //  /r/n
 		for (int i = 0; i < singlgLogJson.length; i++) {
@@ -258,7 +259,7 @@ public class LogClient {
 			}
 		}
 		return array.toString();
-	}
+	}*/
 
 
 	public void saveUsageData(int time) {
@@ -272,7 +273,6 @@ public class LogClient {
 			@Override
 			public void run() {
 				try {
-					
 					logRecord.setCpuUsage(logGetData.getCpuUsage(pack));
 					logRecord.setMemoryUsage(logGetData.getMemoryUsage());
 					
