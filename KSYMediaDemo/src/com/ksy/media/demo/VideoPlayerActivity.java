@@ -91,14 +91,14 @@ public class VideoPlayerActivity extends Activity implements
 		Log.d(Constants.LOG_TAG, "input url = " + url);
 
 		playerView.setPlayerViewCallback(this);
-		// String path = "rtmp://192.168.135.185:1935/myLive/guoyankai";
-		// String path = "http://live.3gv.ifeng.com/zixun.m3u8"; // vod		
+//		 String path = "rtmp://192.168.135.185:1935/myLive/guoyankai";
+		 String path = "http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8"; // vod		
 //		 String path = "http://maichang.kssws.ks-cdn.com/upload20150716161913.mp4";
 //		String path = "http://ceshi.kssws.ks-cdn.com/bb.mp4";
 
-		File file = new File(Environment.getExternalStorageDirectory(),
-				"Love.mp4");
-		String path = file.getAbsolutePath();
+//		File file = new File(Environment.getExternalStorageDirectory(),
+//				"Love.mp4");
+//		String path = file.getAbsolutePath();
 		
 		// Love.mp4 
 		// avitest.avi

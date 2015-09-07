@@ -263,7 +263,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 			mMediaInfo = null;
 			KSYMediaPlayer ksyMediaPlayer = null;
 			if (mUri != null) {
-				ksyMediaPlayer = new KSYMediaPlayer(mContext, 500000, true);//true为开启日志
+				ksyMediaPlayer = new KSYMediaPlayer(mContext, 500000, true, "my", "1234");//true为开启日志 "jrtt", "live"
 				ksyMediaPlayer.setAvOption(AvFormatOption_HttpDetectRangeSupport.Disable);
 				ksyMediaPlayer.setOverlayFormat(AvFourCC.SDL_FCC_RV32);
 				ksyMediaPlayer.setAvCodecOption("skip_loop_filter", "48");

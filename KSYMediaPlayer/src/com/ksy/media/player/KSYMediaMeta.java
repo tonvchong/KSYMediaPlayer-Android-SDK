@@ -14,7 +14,11 @@ public class KSYMediaMeta {
     public static final String IJKM_KEY_BITRATE = "bitrate";
     public static final String IJKM_KEY_VIDEO_STREAM = "video";
     public static final String IJKM_KEY_AUDIO_STREAM = "audio";
-
+   
+    public static final String IJKM_KEY_SERVERIP = "source_ip";
+    public static final String IJKM_KEY_PROTOCOL = "protocol_name";
+    public static final String IJKM_KEY_PLAY_TYPE = "play_type";
+    
     // stream meta
     public static final String IJKM_KEY_TYPE = "type";
     public static final String IJKM_VAL_TYPE__VIDEO = "video";
@@ -108,6 +112,10 @@ public class KSYMediaMeta {
     public Bundle mMediaMeta;
 
     public String mFormat;
+    public String mServerIp;
+    public String mProtocol;
+    public String mPlayType;
+    
     public long mDurationUS;
     public long mStartUS;
     public long mBitrate;
@@ -173,6 +181,10 @@ public class KSYMediaMeta {
         KSYMediaMeta meta = new KSYMediaMeta();
         meta.mMediaMeta = mediaMeta;
 
+        meta.mServerIp = meta.getString(IJKM_KEY_SERVERIP);
+        meta.mProtocol = meta.getString(IJKM_KEY_PROTOCOL);
+        meta.mPlayType = meta.getString(IJKM_KEY_PLAY_TYPE);
+        
         meta.mFormat = meta.getString(IJKM_KEY_FORMAT);
         meta.mDurationUS = meta.getLong(IJKM_KEY_DURATION_US);
         meta.mStartUS = meta.getLong(IJKM_KEY_START_US);

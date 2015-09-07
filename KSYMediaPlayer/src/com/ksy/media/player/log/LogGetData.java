@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import com.ksy.media.player.util.Constants;
 import com.ksy.media.player.util.Cpu;
 
 import android.app.ActivityManager;
@@ -256,7 +257,7 @@ public class LogGetData {
 		 Date date = new Date();
 		 
 		 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"); //yyyy-MM-dd hh:mm:ss
-	     Log.d("lixp", "date.gettime=" + date.getTime());
+	     Log.d(Constants.LOG_TAG, "date.gettime=" + date.getTime());
 		 return date.getTime();
 		 
 //		 return df.format(date);

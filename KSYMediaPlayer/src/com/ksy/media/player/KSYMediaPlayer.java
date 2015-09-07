@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map.Entry;
@@ -49,9 +50,11 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	private static final int MEDIA_TIMED_TEXT = 99;
 	private static final int MEDIA_ERROR = 100;
 	private static final int MEDIA_GET_DRM_KEY = 101;
+	private static final int MEDIA_GET_SPEED = 103;
 	private static final int MEDIA_INFO = 200;
 
 	protected static final int MEDIA_SET_VIDEO_SAR = 10001;
+	private static final int MEDIA_INFO_GET_SPEED = 803;
 
 	@AccessedByNative
 	private long mNativeMediaPlayer;
@@ -101,7 +104,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 		synchronized (KSYMediaPlayer.class) {
 			if (!mIsLibLoaded) {
-				libLoader.loadLibrary("gnustl_shared");
+//				libLoader.loadLibrary("gnustl_shared");
 				libLoader.loadLibrary("ksyffmpeg");
 				libLoader.loadLibrary("ksyutil");
 				libLoader.loadLibrary("ksysdl");
@@ -114,7 +117,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	private static volatile boolean mIsNativeInitialized = false;
 
 	private static void initNativeOnce() {
-
 		synchronized (KSYMediaPlayer.class) {
 			if (!mIsNativeInitialized) {
 				native_init();
@@ -128,11 +130,14 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	}
 
 	//TODO
-	public KSYMediaPlayer(Context context, int time, boolean b) {
+	public KSYMediaPlayer(Context context, int time, boolean b, String companyTag, String businessTag) {
 		this(sLocalLibLoader);
 		mContext = context;
 		
 		logClient.mSwitch = b;
+		
+		logRecord.setCompanyTag(companyTag);
+		logRecord.setBusinessTag(businessTag);
 		
 		//多久获取一次实时数据
 		mGetUsageTime = time;
@@ -201,15 +206,47 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		_setDataSource(path, null, null);
 	}
 
+	
 	private native void _setDataSource(String path, String[] keys,
 			String[] values) throws IOException, IllegalArgumentException,
 			SecurityException, IllegalStateException;
 
 	@Override
+	public void setDataSource(String path, Map<String, String> headers)
+			throws IOException, IllegalArgumentException, SecurityException,
+			IllegalStateException {
+		StringBuffer buffer = new StringBuffer();
+		if (headers != null && headers.size() > 0) {
+			for (Entry<String, String> entry : headers.entrySet()) {
+				buffer.append(entry.getKey().toString()).append(":")
+						.append(entry.getValue().toString()).append("\r\n");
+			}
+		}
+		mDataSource = path;
+		_setDataSourceAndHeader(path, buffer.toString());
+		Log.d("eflake", buffer.toString());
+	}
+	
+	private native void _setDataSourceAndHeader(String path, String headers)
+			throws IOException, IllegalArgumentException, SecurityException,
+			IllegalStateException;
+	
+	@Override
 	public String getDataSource() {
 
 		return mDataSource;
 	}
+
+	
+	@Override
+	public void setCacheInPause(boolean useCacheInPause) throws IOException,
+			IllegalArgumentException, SecurityException, IllegalStateException {
+		_setCacheInPause(useCacheInPause);
+	}
+
+	private native void _setCacheInPause(boolean useCacheInPause)
+			throws IOException, IllegalArgumentException, SecurityException,
+			IllegalStateException;
 
 	public void setDataSourceAsFFConcatContent(String ffConcatContent) {
 
@@ -284,7 +321,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		
 		logRecord.setFirstFrameTime(start - prepare);
 		
-		
 		Log.d(Constants.LOG_TAG, "logClient.mSwitch 22 =" + logClient.mSwitch);
 		if (logClient.mSwitch) {
 			/*firstTimer = new Timer();
@@ -313,7 +349,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			}
 			
 		}
-		
         
 		_start();
 	}
@@ -329,8 +364,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	public void stop() throws IllegalStateException {
 
 		stayAwake(false);
-		
-		
 		
 		_stop();
 		
@@ -441,8 +474,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
     	//不需要计算时间了
 //    	logRecord.setSeekBegin(System.currentTimeMillis());
     	
-    
-    	
     	Log.d(Constants.LOG_TAG, "logClient.mSwitch 44 =" + logClient.mSwitch);
     	if (logClient.mSwitch) {
     		/*seekbeginTimer = new Timer();
@@ -471,7 +502,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			}
     	}
     	
-		
     	seekTo(msec);
     }
 	
@@ -519,7 +549,8 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	public MediaInfo getMediaInfo() {
 
 		MediaInfo mediaInfo = new MediaInfo();
-		mediaInfo.mMediaPlayerName = "ijkplayer";
+//		mediaInfo.mMediaPlayerName = "ijkplayer";
+		mediaInfo.mMediaPlayerName = "ksyplayer";
 		
 		String videoCodecInfo = _getVideoCodecInfo();
 		if (!TextUtils.isEmpty(videoCodecInfo)) {
@@ -549,10 +580,18 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			//TODO 直播点播、协议、格式、编码记录
 			mediaInfo.mMeta = KSYMediaMeta.parse(_getMediaMeta());
 			
+			String serverIp = mediaInfo.mMeta.mServerIp;
+			
+			//Constants.LOG_TAG
+			Log.e(Constants.LOG_TAG,"serverIp =" + serverIp);
+			
+			String playMode = mediaInfo.mMeta.mPlayType;
+			String protocol = mediaInfo.mMeta.mProtocol;
+			
 			String format = mediaInfo.mMeta.mFormat;
 			String codec = IjkStreamMeta.getCodecLongNameInline();
 			
-			Log.e(Constants.LOG_TAG,"format =" + format + "<>>codec=" + codec);
+			Log.e(Constants.LOG_TAG,"format =" + format + "<>>codec=" + codec + "<<<<>playMode=" + playMode + ">>><<<protocol=" + protocol);
 			playMetaData = format + "_" + codec;
 			logRecord.setPlayMetaData(playMetaData);
 			
@@ -630,6 +669,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 	private native void _setOpenSLESEnabled(boolean enabled);
 
+	//TODO
 	public Bundle getMediaMeta() {
 
 		return _getMediaMeta();

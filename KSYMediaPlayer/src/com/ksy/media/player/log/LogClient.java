@@ -165,7 +165,9 @@ public class LogClient {
 		//第一步
 		HttpClient httpClient = new DefaultHttpClient();
 		//第二步：生成使用POST方法的请求对象
-		HttpPost httpPost = new HttpPost(Constants.LOG_SERVER_URL);
+		String mUrl = Constants.LOG_SERVER_URL + logRecord.getCompanyTag() + "/" + logRecord.getBusinessTag();
+		Log.d(Constants.LOG_TAG, "mUrl =" + mUrl);
+		HttpPost httpPost = new HttpPost(mUrl);
 		httpPost.addHeader("accept-encoding", "gzip, deflate");
 		
 //		httpPost.addHeader("Content-Type", "application/json"); //单条
