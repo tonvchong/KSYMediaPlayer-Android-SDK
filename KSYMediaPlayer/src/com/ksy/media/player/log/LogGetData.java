@@ -310,15 +310,6 @@ public class LogGetData {
 	}
 
 	/**
-	 * TODO
-	 */
-	public static String playMetaData() {
-		String data = null;
-
-		return data;
-	}
-
-	/**
 	 * 将ip的整数形式转换成ip形式
 	 * 
 	 * @param ipInt
@@ -334,6 +325,4 @@ public class LogGetData {
 	}
 
 }
-
-
 

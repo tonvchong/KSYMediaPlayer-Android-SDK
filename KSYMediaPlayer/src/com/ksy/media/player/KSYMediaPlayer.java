@@ -53,9 +53,18 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	private static final int MEDIA_GET_SPEED = 103;
 	private static final int MEDIA_INFO = 200;
 
-	protected static final int MEDIA_SET_VIDEO_SAR = 10001;
 	private static final int MEDIA_INFO_GET_SPEED = 803;
 
+	protected static final int MEDIA_SET_VIDEO_SAR = 10001;
+//	public static final int MEDIA_ERROR_TIMEOUT = 10002;
+//	public static final int MEDIA_ERROR_UNSUPPORTED = 10003;
+//	public static final int MEDIA_ERROR_NOFILE = 10004;
+//	public static final int MEDIA_ERROR_SEEKUNSUPPORT = 10005;
+	public static final int MEDIA_ERROR_SEEKUNREACHABLE = 10006; //seekerror
+//	public static final int MEDIA_ERROR_DRM = 10007;
+//	public static final int MEDIA_ERROR_MEMORY = 10008;
+//	public static final int MEDIA_ERROR_WRONGPARAM = 10009;
+	
 	@AccessedByNative
 	private long mNativeMediaPlayer;
 
@@ -288,15 +297,12 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
             
             try {
 				Log.d(Constants.LOG_TAG, "PlayStatus = " + logRecord.getPlayStatusJson());
-				Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
 				logClient.put(logRecord.getPlayStatusJson());
-				logClient.put(logRecord.getNetStateJson());
 				
 			} catch (Ks3ClientException e) {
 				e.printStackTrace();
 				Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
 			}
-            
         }
 		
 		
@@ -341,13 +347,14 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			
 			try {
 				Log.e(Constants.LOG_TAG, "logRecord.getFirstFrameTimeJson() =" + logRecord.getFirstFrameTimeJson());
+				Log.d(Constants.LOG_TAG, "NetState = " + logRecord.getNetStateJson());
 				logClient.put(logRecord.getFirstFrameTimeJson());
+				logClient.put(logRecord.getNetStateJson());
 				
 			} catch (Ks3ClientException e) {
 				e.printStackTrace();
 				Log.e(Constants.LOG_TAG, "firstTimer e = " + e);
 			}
-			
 		}
         
 		_start();
@@ -519,7 +526,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			try {
 				logClient.put(logRecord.getBaseDataEndJson());
 			} catch (Ks3ClientException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -581,18 +587,29 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			mediaInfo.mMeta = KSYMediaMeta.parse(_getMediaMeta());
 			
 			String serverIp = mediaInfo.mMeta.mServerIp;
+			logRecord.setServerIp(serverIp);
 			
-			//Constants.LOG_TAG
-			Log.e(Constants.LOG_TAG,"serverIp =" + serverIp);
+			String playType = "";
+			int playMode = mediaInfo.mMeta.mPlayType;
 			
-			String playMode = mediaInfo.mMeta.mPlayType;
+			if (playMode == 0) {
+				//出现错误
+				playType = "获取失败";
+				
+			} else if (playMode == 1) {
+				//直播
+				playType = "直播";
+			} else if (playMode == 2){
+				//点播
+				playType = "点播";
+			}
+			
 			String protocol = mediaInfo.mMeta.mProtocol;
-			
 			String format = mediaInfo.mMeta.mFormat;
 			String codec = IjkStreamMeta.getCodecLongNameInline();
 			
-			Log.e(Constants.LOG_TAG,"format =" + format + "<>>codec=" + codec + "<<<<>playMode=" + playMode + ">>><<<protocol=" + protocol);
-			playMetaData = format + "_" + codec;
+			Log.d(Constants.LOG_TAG,"format =" + format + "<>>codec=" + codec + "<<<<>playType=" + playType + ">>><<<protocol=" + protocol);
+			playMetaData = playType + "_" + protocol + "_" + format + "_" + codec;
 			logRecord.setPlayMetaData(playMetaData);
 			
 		} catch (Throwable e) {
@@ -669,7 +686,6 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 	private native void _setOpenSLESEnabled(boolean enabled);
 
-	//TODO
 	public Bundle getMediaMeta() {
 
 		return _getMediaMeta();
@@ -769,6 +785,14 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 
 			case MEDIA_ERROR:
 
+				if (msg.arg1 == MEDIA_ERROR_SEEKUNREACHABLE) {
+					logRecord.setSeekStatus("fail");
+					logRecord.setSeekMessage(String.valueOf(msg.arg2));
+				} else {
+					//都返回错误码就行
+			        logRecord.setPlayStatus(String.valueOf(msg.arg2));
+				}
+				
 				//TODO
 				Log.e(Constants.LOG_TAG, "Error (" + msg.arg1 + "," + msg.arg2 + ")");
 				if (!player.notifyOnError(msg.arg1, msg.arg2)) {
@@ -809,7 +833,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 				}
 				break;
 
-				//TODO  102 不处理，没有问题，状态改变时抛出
+				//102 不处理，没有问题，状态改变时抛出
 			default:
 				DebugLog.e(TAG, "Unknown message type " + msg.what);
 				return;

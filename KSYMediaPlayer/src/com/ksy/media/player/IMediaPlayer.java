@@ -32,15 +32,6 @@ public interface IMediaPlayer {
 	public static final int MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK = 200;
 
 	public static final int MEDIA_ERROR_UNKNOWN = 10000;
-	public static final int MEDIA_ERROR_IO = 10001;
-	public static final int MEDIA_ERROR_TIMEOUT = 10002;
-	public static final int MEDIA_ERROR_UNSUPPORTED = 10003;
-	public static final int MEDIA_ERROR_NOFILE = 10004;
-	public static final int MEDIA_ERROR_SEEKUNSUPPORT = 10005;
-	public static final int MEDIA_ERROR_SEEKUNREACHABLE = 10006;
-	public static final int MEDIA_ERROR_DRM = 10007;
-	public static final int MEDIA_ERROR_MEMORY = 10008;
-	public static final int MEDIA_ERROR_WRONGPARAM = 10009;
 
 	public static final int MEDIA_BUFFERSIZE_DEFAULT = 2 * 10;
 

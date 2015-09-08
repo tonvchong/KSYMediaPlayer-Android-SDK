@@ -92,14 +92,18 @@ public class VideoPlayerActivity extends Activity implements
 
 		playerView.setPlayerViewCallback(this);
 //		 String path = "rtmp://192.168.135.185:1935/myLive/guoyankai";
-		 String path = "http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8"; // vod		
+//		 String path = "http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8"; // vod	hls
 //		 String path = "http://maichang.kssws.ks-cdn.com/upload20150716161913.mp4";
+//		 String path = "http://live.ksyun.com:8080/live/luohengfeng/index.m3u8"; //直播
 //		String path = "http://ceshi.kssws.ks-cdn.com/bb.mp4";
 
 //		File file = new File(Environment.getExternalStorageDirectory(),
-//				"Love.mp4");
+//				"WND3_150903131440_0012.mp4");
 //		String path = file.getAbsolutePath();
 		
+		 //WND3_150903090418_0012.mp4
+		 //WND3_150903131440_0012.mp4
+		String path = "";
 		// Love.mp4 
 		// avitest.avi
 		// flvtest.flv

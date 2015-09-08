@@ -114,7 +114,7 @@ public class KSYMediaMeta {
     public String mFormat;
     public String mServerIp;
     public String mProtocol;
-    public String mPlayType;
+    public int mPlayType;
     
     public long mDurationUS;
     public long mStartUS;
@@ -183,7 +183,8 @@ public class KSYMediaMeta {
 
         meta.mServerIp = meta.getString(IJKM_KEY_SERVERIP);
         meta.mProtocol = meta.getString(IJKM_KEY_PROTOCOL);
-        meta.mPlayType = meta.getString(IJKM_KEY_PLAY_TYPE);
+//        meta.mPlayType = meta.getString(IJKM_KEY_PLAY_TYPE);
+        meta.mPlayType = meta.getInt(IJKM_KEY_PLAY_TYPE);
         
         meta.mFormat = meta.getString(IJKM_KEY_FORMAT);
         meta.mDurationUS = meta.getLong(IJKM_KEY_DURATION_US);

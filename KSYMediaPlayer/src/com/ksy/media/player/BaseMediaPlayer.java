@@ -24,7 +24,7 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
     private OnInfoListener mOnInfoListener;
     private OnDRMRequiredListener mOnDRMRequiredListener;
     
-    public LogRecord logRecord = LogRecord.getInstance();
+    public static LogRecord logRecord = LogRecord.getInstance();
     private Timer seekTimer;
     public LogClient logClient;
     
@@ -106,9 +106,8 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
             mOnSeekCompleteListener.onSeekComplete(this);
         
         //不需要这个了，合并seekstatus和seekMessage
-//        logRecord.setSeekEnd(System.currentTimeMillis());
         logRecord.setSeekStatus("ok");
-        logRecord.setSeekMessage("SeekComplete"); //TODO 需要底层对接
+        logRecord.setSeekMessage("SeekComplete success"); //TODO 需要底层对接
         
         Log.d(Constants.LOG_TAG, "logClient.mSwitch 55 =" + logClient.mSwitch);
         if (logClient.mSwitch) {
@@ -134,18 +133,9 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
 				
 			} catch (Ks3ClientException e) {
 				e.printStackTrace();
-				Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
+				Log.e(Constants.LOG_TAG, "BaseMediaPlayer e = " + e);
 			}
         }
-        
-    
-        /*try {
-			LogClient.getInstance().put(logRecord.getSeekEndJson());
-		} catch (Ks3ClientException e) {
-			e.printStackTrace();
-			Log.e(Constants.LOG_TAG, "BaseMediaPlayer e =" + e);
-		}*/
-        
     }
 
     protected final void notifyOnVideoSizeChanged(int width, int height,
@@ -155,17 +145,11 @@ public abstract class BaseMediaPlayer implements IMediaPlayer {
                     sarNum, sarDen);
     }
 
-    //TODO
+
     protected final boolean notifyOnError(int what, int extra) {
-        if (mOnErrorListener != null)
+        if (mOnErrorListener != null) {
             return mOnErrorListener.onError(this, what, extra);
-        logRecord.setSeekStatus("fail");
-        
-        String playFail = String.valueOf(what) + "_" + String.valueOf(extra);
-        //都返回错误码就行
-        logRecord.setPlayStatus(playFail);
-        
-        logRecord.setSeekMessage(playFail);
+        }
         
         return false;
     }

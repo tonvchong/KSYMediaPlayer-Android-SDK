@@ -113,8 +113,6 @@ public class LogClient {
 		logRecord.setDeviceIp(logGetData.getDeviceIp());
 		logRecord.setSystem("Android");
 		logRecord.setUserAgent("Android");
-		logRecord.setServerIp("10.0.2.2"); //TODO
-		
 	}
 	
 	/**
