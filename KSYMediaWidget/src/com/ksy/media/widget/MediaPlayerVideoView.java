@@ -290,7 +290,7 @@ public class MediaPlayerVideoView extends SurfaceView implements IMediaPlayerCon
 			mMediaPlayer.setOnDRMRequiredListener(mDRMRequiredListener);
 			mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
 			if (mUri != null)
-				mMediaPlayer.setDataSource(mUri.toString());
+				mMediaPlayer.setDataSource(mUri.toString(), null);
 			mMediaPlayer.setDisplay(mSurfaceHolder);
 			mMediaPlayer.setScreenOnWhilePlaying(true);
 			mMediaPlayer.prepareAsync();

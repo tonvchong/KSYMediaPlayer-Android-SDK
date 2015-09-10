@@ -266,7 +266,8 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 	public void prepareAsync() throws IllegalStateException {
 		prepare = System.currentTimeMillis();
         
-		Log.d(Constants.LOG_TAG, "logClient.mSwitch 11 =" + logClient.mSwitch);
+		logRecord.setPlayStatus("ok");//默认值
+		
         if (logClient.mSwitch) {
         	logClient.saveUsageData(mGetUsageTime);
             try {
@@ -519,11 +520,11 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		updateSurfaceScreenOn();
 		resetListeners();
 		
-		Log.d(Constants.LOG_TAG, "logClient.mSwitch 33 =" + logClient.mSwitch);
 		if (logClient.mSwitch) {
 			logClient.stop();
-			Log.d(Constants.LOG_TAG, "stop() ......................" );
+			
 			try {
+				Log.d(Constants.LOG_TAG, "BaseEndData = " + logRecord.getBaseDataEndJson());
 				logClient.put(logRecord.getBaseDataEndJson());
 			} catch (Ks3ClientException e) {
 				e.printStackTrace();
@@ -559,6 +560,8 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		mediaInfo.mMediaPlayerName = "ksyplayer";
 		
 		String videoCodecInfo = _getVideoCodecInfo();
+		logRecord.setVideoCodec(videoCodecInfo);
+		
 		if (!TextUtils.isEmpty(videoCodecInfo)) {
 			String nodes[] = videoCodecInfo.split(",");
 			if (nodes.length >= 2) {
@@ -571,6 +574,8 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		}
 
 		String audioCodecInfo = _getAudioCodecInfo();
+		logRecord.setAudioCodec(audioCodecInfo);
+		
 		if (!TextUtils.isEmpty(audioCodecInfo)) {
 			String nodes[] = audioCodecInfo.split(",");
 			if (nodes.length >= 2) {
@@ -583,7 +588,7 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 		}
 
 		try {
-			//TODO 直播点播、协议、格式、编码记录
+			//直播点播、协议、格式、编码记录
 			mediaInfo.mMeta = KSYMediaMeta.parse(_getMediaMeta());
 			
 			String serverIp = mediaInfo.mMeta.mServerIp;
@@ -609,8 +614,11 @@ public final class KSYMediaPlayer extends BaseMediaPlayer {
 			String codec = IjkStreamMeta.getCodecLongNameInline();
 			
 			Log.d(Constants.LOG_TAG,"format =" + format + "<>>codec=" + codec + "<<<<>playType=" + playType + ">>><<<protocol=" + protocol);
-			playMetaData = playType + "_" + protocol + "_" + format + "_" + codec;
-			logRecord.setPlayMetaData(playMetaData);
+//			playMetaData = playType + "_" + protocol + "_" + format + "_" + codec;
+			
+			logRecord.setPlayType(playType);
+			logRecord.setProtocol(protocol);
+			logRecord.setFormat(format);
 			
 		} catch (Throwable e) {
 			e.printStackTrace();

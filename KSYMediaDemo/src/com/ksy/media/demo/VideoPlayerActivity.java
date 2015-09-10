@@ -96,14 +96,15 @@ public class VideoPlayerActivity extends Activity implements
 //		 String path = "http://maichang.kssws.ks-cdn.com/upload20150716161913.mp4";
 //		 String path = "http://live.ksyun.com:8080/live/luohengfeng/index.m3u8"; //直播
 //		String path = "http://ceshi.kssws.ks-cdn.com/bb.mp4";
-
+		
+		 String path = "http://www.huajiao.com/live/share.php?liveid=581383&tab=2";
 //		File file = new File(Environment.getExternalStorageDirectory(),
-//				"WND3_150903131440_0012.mp4");
+//				"Love.mp4");
 //		String path = file.getAbsolutePath();
 		
 		 //WND3_150903090418_0012.mp4
 		 //WND3_150903131440_0012.mp4
-		String path = "";
+
 		// Love.mp4 
 		// avitest.avi
 		// flvtest.flv

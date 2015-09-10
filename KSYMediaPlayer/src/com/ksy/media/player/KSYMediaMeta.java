@@ -218,6 +218,7 @@ public class KSYMediaMeta {
                     .getString(IJKM_KEY_CODEC_PROFILE);
             streamMeta.mCodecLongName = streamMeta
                     .getString(IJKM_KEY_CODEC_LONG_NAME);
+            
             streamMeta.mBitrate = streamMeta.getInt(IJKM_KEY_BITRATE);
 
             if (streamMeta.mType.equalsIgnoreCase(IJKM_VAL_TYPE__VIDEO)) {

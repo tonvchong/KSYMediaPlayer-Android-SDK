@@ -6,7 +6,10 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ksy.media.player.util.Constants;
+
 import android.text.TextUtils;
+import android.util.Log;
 
 public class LogRecord {
 	
@@ -31,11 +34,70 @@ public class LogRecord {
 	private String seekStatus;
 	private String seekMessage;
 	private String playStatus;
-	private String playMetaData; //TODO
-	
+	private String playType; //直播点播
+	private String protocol; //协议
+	private String format; // 格式
+	private String audioCodec; //音频编码
+	private String videoCodec; //视频编码
+	     
 	private String companyTag;
 	private String businessTag;
 	
+
+	private static LogRecord mInstance;
+	private static Object mLockObject = new Object();
+	
+	public static LogRecord getInstance() {
+		if (null == mInstance) {
+			synchronized (mLockObject) {
+				if (null == mInstance) {
+					mInstance = new LogRecord();
+				}
+			}
+		}
+		return mInstance;
+	}
+	
+	
+	public String getPlayType() {
+		return playType;
+	}
+
+	public void setPlayType(String playType) {
+		this.playType = playType;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+	
+	public String getAudioCodec() {
+		return audioCodec;
+	}
+
+	public void setAudioCodec(String audioCodec) {
+		this.audioCodec = audioCodec;
+	}
+
+	public String getVideoCodec() {
+		return videoCodec;
+	}
+
+	public void setVideoCodec(String videoCodec) {
+		this.videoCodec = videoCodec;
+	}
 
 	public String getCompanyTag() {
 		return companyTag;
@@ -51,20 +113,6 @@ public class LogRecord {
 
 	public void setBusinessTag(String businessTag) {
 		this.businessTag = businessTag;
-	}
-
-	private static LogRecord mInstance;
-	private static Object mLockObject = new Object();
-	
-	public static LogRecord getInstance() {
-		if (null == mInstance) {
-			synchronized (mLockObject) {
-				if (null == mInstance) {
-					mInstance = new LogRecord();
-				}
-			}
-		}
-		return mInstance;
 	}
 	
 	public String getCpu() {
@@ -234,15 +282,6 @@ public class LogRecord {
 	public void setPlayStatus(String playStatus) {
 		this.playStatus = playStatus;
 	}
-
-	public String getPlayMetaData() {
-		return playMetaData;
-	}
-
-	public void setPlayMetaData(String playMetaData) {
-		this.playMetaData = playMetaData;
-	}
-
 
 	/*public void copyRecord(LogRecord record) {
 		setCpu(record.getCpu());
@@ -416,9 +455,13 @@ public class LogRecord {
 		    obj.put("type", "102");
 		    obj.put("firstFrameTime", getFirstFrameTime());
 		    obj.put("cacheBufferSize", getCacheBufferSize()); //String.valueOf(getCacheBufferSize())
-		    obj.put("playMetaData", getPlayMetaData());
+		    obj.put("playType", getPlayType());
+		    obj.put("protocol", getProtocol());
+		    obj.put("format", getFormat());
+		    obj.put("audioCodec", getAudioCodec());
+		    obj.put("videoCodec", getVideoCodec());
 		    obj.put("gmt", getGmt());
-		    
+			
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -563,6 +606,35 @@ public class LogRecord {
 	}*/
 	
 	
+	//TODO 用户自定义数据接口
+	public String getUserDefinedJson(Map<String, String> map, String field) {
+		JSONObject obj = new JSONObject();
+		
+		for (String key : map.keySet()) {
+//			Log.d(Constants.LOG_TAG, "key= "+ key + " and value= " + map.get(key));
+			
+			try {
+				obj.put(key, map.get(key));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			obj.put("field", field);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return obj.toString();
+	}
+	
+	
 }
+
+
+
+
 
 

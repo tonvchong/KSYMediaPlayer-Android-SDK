@@ -146,7 +146,7 @@ public class LogClient {
 		ByteArrayEntity byteArrayEntity = null;
 //		String jsonString = makeJsonLog(recordsResult.contentBuffer.toString()); //TODO 取什么
 		String jsonString = recordsResult.contentBuffer.toString(); //单条或多条
-		Log.d(Constants.LOG_TAG, "jsonString =" + jsonString);
+		Log.e(Constants.LOG_TAG, "jsonString =" + jsonString);
 		
 		try {
 			byteArrayEntity = new ByteArrayEntity(GzipUtil.compress(jsonString)
@@ -284,7 +284,7 @@ public class LogClient {
 					Log.e(Constants.LOG_TAG, "saveUsageData e = " + e);
 				}
 			}
-		}, 5000, time);
+		}, 3000, time);
 	}
 	
 	
